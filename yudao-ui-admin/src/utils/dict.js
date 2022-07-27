@@ -9,6 +9,9 @@ export const DICT_TYPE = {
   USER_TYPE: 'user_type',
   COMMON_STATUS: 'common_status',
 
+  // ========== STUCMS 模块 ==========
+  STUCMS_JISHU_TYPE: 'stucms_jishu_type', // 是否寄宿
+  STUCMS_LIUSHOU_TYPE: 'stucms_liushou_type', // 留守儿童
   // ========== SYSTEM 模块 ==========
   SYSTEM_USER_SEX: 'system_user_sex',
   SYSTEM_MENU_TYPE: 'system_menu_type',

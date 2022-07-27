@@ -26,7 +26,7 @@ const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
   baseURL: process.env.VUE_APP_BASE_API + '/admin-api/', // 此处的 /admin-api/ 地址，原因是后端的基础路径为 /admin-api/
   // 超时
-  timeout: 30000,
+  timeout: -1,
   // 禁用 Cookie 等信息
   withCredentials: false,
 })

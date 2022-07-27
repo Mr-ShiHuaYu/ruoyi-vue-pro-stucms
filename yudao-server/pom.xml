@@ -37,27 +37,42 @@
             <artifactId>yudao-module-infra-biz</artifactId>
             <version>${revision}</version>
         </dependency>
+
         <dependency>
             <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-module-pay-biz</artifactId>
+            <artifactId>yudao-module-stucms-biz</artifactId>
             <version>${revision}</version>
         </dependency>
-        <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-module-market-biz</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-module-product-biz</artifactId>
-            <version>${revision}</version>
-        </dependency>
+
+        <!--<dependency>-->
+        <!--    <groupId>cn.iocoder.boot</groupId>-->
+        <!--    <artifactId>yudao-module-member-biz</artifactId>-->
+        <!--    <version>${revision}</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+        <!--    <groupId>cn.iocoder.boot</groupId>-->
+        <!--    <artifactId>yudao-module-pay-biz</artifactId>-->
+        <!--    <version>${revision}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--    &lt;!&ndash;营销相关功能&ndash;&gt;-->
+        <!--    <groupId>cn.iocoder.boot</groupId>-->
+        <!--    <artifactId>yudao-module-market-biz</artifactId>-->
+        <!--    <version>${revision}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--    &lt;!&ndash;商品相关功能&ndash;&gt;-->
+        <!--    <groupId>cn.iocoder.boot</groupId>-->
+        <!--    <artifactId>yudao-module-product-biz</artifactId>-->
+        <!--    <version>${revision}</version>-->
+        <!--</dependency>-->
         <!-- 默认引入 yudao-module-bpm-biz-flowable 实现，可以替换为 yudao-module-bpm-biz-activiti 实现-->
-        <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-module-bpm-biz</artifactId>
-            <version>${revision}</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>cn.iocoder.boot</groupId>-->
+        <!--    <artifactId>yudao-module-bpm-biz</artifactId>-->
+        <!--    <version>${revision}</version>-->
+        <!--</dependency>-->
         <!--        <dependency>-->
         <!--            <groupId>cn.iocoder.boot</groupId>-->
         <!--            <artifactId>yudao-module-bpm-biz-activiti</artifactId>-->

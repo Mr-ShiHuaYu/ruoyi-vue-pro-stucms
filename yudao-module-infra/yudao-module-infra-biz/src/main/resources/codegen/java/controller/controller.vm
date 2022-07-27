@@ -59,8 +59,8 @@ public class ${sceneEnum.prefixClass}${table.className}Controller {
     @ApiImplicitParam(name = "id", value = "编号", required = true, dataTypeClass = ${primaryColumn.javaType}.class)
 #if ($sceneEnum.scene == 1)    @PreAuthorize("@ss.hasPermission('${permissionPrefix}:delete')")#end
 
-    public CommonResult<Boolean> delete${simpleClassName}(@RequestParam("id") ${primaryColumn.javaType} id) {
-        ${classNameVar}Service.delete${simpleClassName}(id);
+    public CommonResult<Boolean> delete${simpleClassName}(@RequestParam("id") Collection<${primaryColumn.javaType}> ids) {
+        ${classNameVar}Service.delete${simpleClassName}(ids);
         return success(true);
     }
 

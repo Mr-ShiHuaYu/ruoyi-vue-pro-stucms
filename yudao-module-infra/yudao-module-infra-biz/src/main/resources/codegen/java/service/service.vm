@@ -29,6 +29,13 @@ public interface ${table.className}Service {
     void update${simpleClassName}(@Valid ${sceneEnum.prefixClass}${table.className}UpdateReqVO updateReqVO);
 
     /**
+    * 批量删除${table.classComment}
+    *
+    * @param ids 编号
+    */
+    void delete${simpleClassName}(Collection<${primaryColumn.javaType}> ids);
+
+    /**
      * 删除${table.classComment}
      *
      * @param id 编号

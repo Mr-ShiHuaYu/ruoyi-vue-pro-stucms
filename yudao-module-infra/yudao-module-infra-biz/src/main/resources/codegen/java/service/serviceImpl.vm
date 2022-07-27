@@ -3,6 +3,7 @@ package ${basePackage}.module.${table.moduleName}.service.${table.businessName};
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
+import cn.hutool.core.collection.CollUtil;
 
 import java.util.*;
 import ${basePackage}.module.${table.moduleName}.controller.${sceneEnum.basePackage}.${table.businessName}.vo.*;
@@ -51,6 +52,17 @@ public class ${table.className}ServiceImpl implements ${table.className}Service 
         this.validate${simpleClassName}Exists(id);
         // 删除
         ${classNameVar}Mapper.deleteById(id);
+    }
+
+    @Override
+    public void delete${simpleClassName}(Collection<${primaryColumn.javaType}> ids) {
+        // 校验存在
+        if (CollUtil.isEmpty(ids)) {
+            throw exception(${simpleClassName_underlineCase.toUpperCase()}_NOT_EXISTS);
+        }
+        ids.forEach(this::validate${simpleClassName}Exists);
+        // 删除
+        ${classNameVar}Mapper.deleteBatchIds(ids);
     }
 
     private void validate${simpleClassName}Exists(${primaryColumn.javaType} id) {
