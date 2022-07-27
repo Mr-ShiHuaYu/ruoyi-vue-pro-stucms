@@ -21,4 +21,8 @@ public interface ErrorCodeConstants {
     ErrorCode TEACHER_NOT_EXISTS = new ErrorCode(1010003001, "老师不存在");
 
 
+    // ========== 考试 1010004001 ==========
+    ErrorCode EXAM_NOT_EXISTS = new ErrorCode(1010004001, "考试不存在");
+
+
 }
