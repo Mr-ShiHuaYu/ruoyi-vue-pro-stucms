@@ -22,6 +22,7 @@
         <swagger-annotations.version>1.6.6</swagger-annotations.version>
         <servlet.versoin>2.5</servlet.versoin>
         <!-- DB 相关 -->
+        <p6spy.version>3.9.1</p6spy.version>
         <druid.version>1.2.11</druid.version>
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <mybatis-plus-generator.version>3.5.2</mybatis-plus-generator.version>
@@ -177,6 +178,13 @@
             </dependency>
 
             <!-- DB 相关 -->
+            <!-- sql性能分析插件 -->
+            <dependency>
+                <groupId>p6spy</groupId>
+                <artifactId>p6spy</artifactId>
+                <version>${p6spy.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>cn.iocoder.boot</groupId>
                 <artifactId>yudao-spring-boot-starter-mybatis</artifactId>
@@ -404,11 +412,11 @@
                 <version>${activiti.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-spring-boot-starter-activiti</artifactId>
-                <version>${revision}</version>
-            </dependency>
+            <!--<dependency>-->
+            <!--    <groupId>cn.iocoder.boot</groupId>-->
+            <!--    <artifactId>yudao-spring-boot-starter-activiti</artifactId>-->
+            <!--    <version>${revision}</version>-->
+            <!--</dependency>-->
             <!-- 工作流相关 flowable -->
             <dependency>
                 <groupId>cn.iocoder.boot</groupId>

@@ -28,6 +28,7 @@ spring:
           config:
             multi-statement-allow: true
     dynamic: # 多数据源配置
+      p6spy: true # 性能分析插件(有性能损耗 不建议生产环境使用)
       druid: # Druid 【连接池】相关的全局配置
         initial-size: 5 # 初始连接数
         min-idle: 10 # 最小连接池数量
