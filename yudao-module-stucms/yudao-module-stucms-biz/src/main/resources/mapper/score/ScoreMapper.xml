@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.stucms.dal.mysql.score.ScoreMapper">
+
+    <sql id="selectScoreSearchPage">
+        SELECT sc.score_id,
+               st.student_name,
+               e.exam_name,
+               st.student_uid,
+               sc.student_id,
+               sc.exam_id,
+               format(AVG(sc.score), 2) as avg,
+               SUM(sc.score)            as sum,
+               format(STD(sc.score), 2) as std
+        FROM stucms_score AS sc
+                 LEFT JOIN stucms_student AS st ON sc.student_id = st.student_id
+                 LEFT JOIN stucms_exam AS e ON sc.exam_id = e.exam_id
+            ${ew.customSqlSegment}
+
+        GROUP BY
+            st.student_id,
+            e.exam_id
+        ORDER BY
+            e.exam_id
+    </sql>
+
+    <select id="selectScoreSearchPageByXml"
+            resultType="cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchRespVO">
+        <include refid="selectScoreSearchPage"/>
+    </select>
+</mapper>

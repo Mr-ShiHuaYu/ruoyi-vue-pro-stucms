@@ -1,13 +1,12 @@
 package cn.iocoder.yudao.module.stucms.convert.exam;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.*;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.exam.ExamDO;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+
+import java.util.List;
 
 /**
  * 考试 Convert
@@ -31,4 +30,5 @@ public interface ExamConvert {
 
     List<ExamExcelVO> convertList02(List<ExamDO> list);
 
+    List<ExamSimpleVO> convertSimpleList(List<ExamDO> list);
 }

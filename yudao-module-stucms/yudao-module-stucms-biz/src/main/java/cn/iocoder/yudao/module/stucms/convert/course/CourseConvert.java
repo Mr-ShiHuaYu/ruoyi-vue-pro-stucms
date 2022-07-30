@@ -1,11 +1,8 @@
 package cn.iocoder.yudao.module.stucms.convert.course;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.*;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.teacher.TeacherDO;
-import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CourseCreateReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CourseExcelVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CourseRespVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CourseUpdateReqVO;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.course.CourseDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -35,4 +32,6 @@ public interface CourseConvert {
     List<CourseExcelVO> convertList02(List<CourseDO> list);
 
     CourseRespVO.Teacher convert1(TeacherDO teacherDO);
+
+    List<CourseSimpleRespVO> convertSimpleList(List<CourseDO> courseList);
 }

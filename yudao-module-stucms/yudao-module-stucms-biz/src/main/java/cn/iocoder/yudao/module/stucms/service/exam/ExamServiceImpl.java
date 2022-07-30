@@ -2,10 +2,7 @@ package cn.iocoder.yudao.module.stucms.service.exam;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.ExamCreateReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.ExamExportReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.ExamPageReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.ExamUpdateReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.*;
 import cn.iocoder.yudao.module.stucms.convert.exam.ExamConvert;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.exam.ExamDO;
 import cn.iocoder.yudao.module.stucms.dal.mysql.exam.ExamMapper;
@@ -66,6 +63,7 @@ public class ExamServiceImpl implements ExamService {
         ids.forEach(this::validateExamExists);
         // 删除
         examMapper.deleteBatchIds(ids);
+        // TODO 删除考试后,同时删除成绩表中的考试
     }
 
     private void validateExamExists(Long id) {
@@ -94,4 +92,9 @@ public class ExamServiceImpl implements ExamService {
         return examMapper.selectList(exportReqVO);
     }
 
+    @Override
+    public List<ExamSimpleVO> getSimpleExamList() {
+        List<ExamDO> list = this.examMapper.selectList();
+        return ExamConvert.INSTANCE.convertSimpleList(list);
+    }
 }

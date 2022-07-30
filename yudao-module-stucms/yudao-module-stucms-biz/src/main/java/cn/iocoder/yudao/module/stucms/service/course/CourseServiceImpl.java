@@ -3,10 +3,7 @@ package cn.iocoder.yudao.module.stucms.service.course;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CourseCreateReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CourseExportReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CoursePageReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CourseUpdateReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.*;
 import cn.iocoder.yudao.module.stucms.convert.course.CourseConvert;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.course.CourseDO;
 import cn.iocoder.yudao.module.stucms.dal.mysql.course.CourseMapper;
@@ -105,6 +102,11 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDO> getCourseList(CourseExportReqVO exportReqVO) {
         return this.courseMapper.selectList(exportReqVO);
+    }
+
+    @Override
+    public List<CourseDO> getCourseList() {
+        return this.courseMapper.selectList();
     }
 
     private void checkCreateOrUpdate(Long id, String courseName) {

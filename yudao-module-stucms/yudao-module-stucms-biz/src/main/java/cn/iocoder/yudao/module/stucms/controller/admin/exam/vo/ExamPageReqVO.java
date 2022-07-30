@@ -1,10 +1,14 @@
 package cn.iocoder.yudao.module.stucms.controller.admin.exam.vo;
 
-import lombok.*;
-import java.util.*;
-import io.swagger.annotations.*;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
@@ -17,7 +21,7 @@ public class ExamPageReqVO extends PageParam {
     @ApiModelProperty(value = "考试名称")
     private String examName;
 
-    @ApiModelProperty(value = "考试时间")
+    @ApiModelProperty(value = "考试日期")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private Date[] examTime;
 

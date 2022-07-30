@@ -20,8 +20,8 @@ public class ExamBaseVO {
     @NotNull(message = "考试名称不能为空")
     private String examName;
 
-    @ApiModelProperty(value = "考试时间", required = true)
-    @NotNull(message = "考试时间不能为空")
+    @ApiModelProperty(value = "考试日期", required = true)
+    @NotNull(message = "考试日期不能为空")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private Date examTime;
 

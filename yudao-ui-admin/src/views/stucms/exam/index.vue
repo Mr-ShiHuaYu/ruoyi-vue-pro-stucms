@@ -6,7 +6,7 @@
       <el-form-item label="考试名称" prop="examName">
         <el-input v-model="queryParams.examName" placeholder="请输入考试名称" clearable @keyup.enter.native="handleQuery"/>
       </el-form-item>
-      <el-form-item label="考试时间" prop="examTime">
+      <el-form-item label="考试日期" prop="examTime">
         <el-date-picker v-model="queryParams.examTime" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange"
                         range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" :default-time="['00:00:00', '23:59:59']" />
       </el-form-item>
@@ -46,11 +46,12 @@
     <!-- 列表 -->
     <el-table v-loading="loading" :data="list"  @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键" align="center" prop="examId" />
+      <el-table-column label="序号" type="index" align="center"/>
+      <!--<el-table-column label="主键" align="center" prop="examId" />-->
       <el-table-column label="考试名称" align="center" prop="examName" />
-      <el-table-column label="考试时间" align="center" prop="examTime" width="180">
+      <el-table-column label="考试日期" align="center" prop="examTime">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.examTime) }}</span>
+          <span>{{ parseDate(scope.row.examTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
@@ -77,8 +78,8 @@
         <el-form-item label="考试名称" prop="examName">
           <el-input v-model="form.examName" placeholder="请输入考试名称" />
         </el-form-item>
-        <el-form-item label="考试时间" prop="examTime">
-          <el-date-picker clearable v-model="form.examTime" type="date" value-format="timestamp" placeholder="选择考试时间" />
+        <el-form-item label="考试日期" prop="examTime">
+          <el-date-picker clearable v-model="form.examTime" type="date" value-format="timestamp" placeholder="选择考试日期" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -128,7 +129,7 @@ export default {
       // 表单校验
       rules: {
         examName: [{ required: true, message: "考试名称不能为空", trigger: "blur" }],
-        examTime: [{ required: true, message: "考试时间不能为空", trigger: "blur" }],
+        examTime: [{ required: true, message: "考试日期不能为空", trigger: "blur" }],
       }
     };
   },
@@ -212,7 +213,16 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const examId = row.examId || this.ids;
-      this.$modal.confirm('是否确认删除考试编号为"' + examId + '"的数据项?').then(function() {
+      let names = "";
+      if (Array.isArray(examId)) {
+        names = this.list.filter(item => {
+          return examId.includes(item.examId)
+        })
+          .map(c => c.examName)
+      } else {
+        names = row.examName
+      }
+      this.$modal.confirm('是否确认删除考试:"' + names + '"?').then(function() {
           return deleteExam(examId.toString());
         }).then(() => {
           this.getList();

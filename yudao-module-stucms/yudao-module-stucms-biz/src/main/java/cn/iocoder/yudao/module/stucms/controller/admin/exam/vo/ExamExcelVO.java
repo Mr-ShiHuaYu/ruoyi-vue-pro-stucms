@@ -20,7 +20,7 @@ public class ExamExcelVO {
     @ExcelProperty("考试名称")
     private String examName;
 
-    @ExcelProperty("考试时间")
+    @ExcelProperty("考试日期")
     private Date examTime;
 
     @ExcelProperty("创建时间")

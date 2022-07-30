@@ -16,7 +16,7 @@ import './permission' // permission control
 // import './tongji' // 百度统计
 import { getDicts } from "@/api/system/dict/data";
 import { getConfigKey } from "@/api/infra/config";
-import { parseTime, resetForm, handleTree} from "@/utils/ruoyi";
+import { parseTime, resetForm, handleTree, parseDate} from "@/utils/ruoyi";
 import Pagination from "@/components/Pagination";
 // 自定义表格工具扩展
 import RightToolbar from "@/components/RightToolbar"
@@ -29,6 +29,7 @@ import {DICT_TYPE, getDictDataLabel, getDictDatas, getDictDatas2} from "@/utils/
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
 Vue.prototype.parseTime = parseTime
+Vue.prototype.parseDate = parseDate
 Vue.prototype.resetForm = resetForm
 Vue.prototype.getDictDatas = getDictDatas
 Vue.prototype.getDictDatas2 = getDictDatas2
@@ -66,7 +67,7 @@ import Tinymce from '@/components/tinymce/index.vue'
 Vue.component('tinymce', Tinymce)
 import '@/icons'
 import request from "@/utils/request" // 实现 form generator 使用自己定义的 axios request 对象
-console.log(request)
+// console.log(request)
 Vue.prototype.$axios = request
 import '@/styles/index.scss'
 

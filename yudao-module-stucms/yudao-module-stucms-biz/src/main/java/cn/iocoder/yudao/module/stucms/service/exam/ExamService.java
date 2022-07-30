@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.stucms.service.exam;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.ExamCreateReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.ExamExportReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.ExamPageReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.ExamUpdateReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.*;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.exam.ExamDO;
 
 import javax.validation.Valid;
@@ -79,4 +76,5 @@ public interface ExamService {
      */
     List<ExamDO> getExamList(ExamExportReqVO exportReqVO);
 
+    List<ExamSimpleVO> getSimpleExamList();
 }

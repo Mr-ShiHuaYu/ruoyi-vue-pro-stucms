@@ -15,7 +15,7 @@ public class ExamExportReqVO {
     @ApiModelProperty(value = "考试名称")
     private String examName;
 
-    @ApiModelProperty(value = "考试时间")
+    @ApiModelProperty(value = "考试日期")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private Date[] examTime;
 
