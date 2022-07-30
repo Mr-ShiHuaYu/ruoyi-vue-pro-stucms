@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Crontab } from '@/components/Crontab'
 import { ref, unref } from 'vue'
 import DictTag from '@/components/DictTag/src/DictTag.vue'
 import * as JobApi from '@/api/infra/job'
@@ -11,6 +12,7 @@ import { FormExpose } from '@/components/Form'
 import { rules, allSchemas } from './job.data'
 import { useRouter } from 'vue-router'
 import { useMessage } from '@/hooks/web/useMessage'
+import { InfraJobStatusEnum } from '@/utils/constants'
 const message = useMessage()
 const { t } = useI18n() // 国际化
 const { push } = useRouter()
@@ -22,18 +24,19 @@ const { register, tableObject, methods } = useTable<JobVO>({
 })
 const { getList, setSearchParams, delList, exportList } = methods
 
-// 导出操作
-const handleExport = async () => {
-  await exportList('定时任务.xls')
-}
-
 // ========== CRUD 相关 ==========
 const actionLoading = ref(false) // 遮罩层
 const actionType = ref('') // 操作按钮的类型
 const dialogVisible = ref(false) // 是否显示弹出层
 const dialogTitle = ref('edit') // 弹出层标题
 const formRef = ref<FormExpose>() // 表单 Ref
-
+const cronExpression = ref('')
+const shortcuts = ref([
+  {
+    text: '每天8点和12点 (自定义追加)',
+    value: '0 0 8,12 * * ?'
+  }
+])
 // 设置标题
 const setDialogTile = (type: string) => {
   dialogTitle.value = t('action.' + type)
@@ -43,6 +46,7 @@ const setDialogTile = (type: string) => {
 
 // 新增操作
 const handleCreate = () => {
+  cronExpression.value = ''
   setDialogTile('create')
   // 重置表单
   unref(formRef)?.getElFormRef()?.resetFields()
@@ -53,7 +57,30 @@ const handleUpdate = async (row: JobVO) => {
   setDialogTile('update')
   // 设置数据
   const res = await JobApi.getJobApi(row.id)
+  cronExpression.value = res.cronExpression
   unref(formRef)?.setValues(res)
+}
+const handleChangeStatus = async (row: JobVO) => {
+  const text = row.status === InfraJobStatusEnum.STOP ? '开启' : '关闭'
+  const status =
+    row.status === InfraJobStatusEnum.STOP ? InfraJobStatusEnum.NORMAL : InfraJobStatusEnum.STOP
+  message
+    .confirm('确认要' + text + '定时任务编号为"' + row.id + '"的数据项?', t('common.reminder'))
+    .then(async () => {
+      row.status =
+        row.status === InfraJobStatusEnum.NORMAL
+          ? InfraJobStatusEnum.NORMAL
+          : InfraJobStatusEnum.STOP
+      await JobApi.updateJobStatusApi(row.id, status)
+      message.success(text + '成功')
+      await getList()
+    })
+    .catch(() => {
+      row.status =
+        row.status === InfraJobStatusEnum.NORMAL
+          ? InfraJobStatusEnum.STOP
+          : InfraJobStatusEnum.NORMAL
+    })
 }
 // 执行日志
 const handleJobLog = (row: JobVO) => {
@@ -77,6 +104,7 @@ const submitForm = async () => {
   // 提交请求
   try {
     const data = unref(formRef)?.formModel as JobVO
+    data.cronExpression = cronExpression.value
     if (actionType.value === 'create') {
       await JobApi.createJobApi(data)
       message.success(t('common.createSuccess'))
@@ -90,11 +118,6 @@ const submitForm = async () => {
   } finally {
     actionLoading.value = false
   }
-}
-
-// 删除操作
-const handleDelete = (row: JobVO) => {
-  delList(row.id, false)
 }
 
 // ========== 详情相关 ==========
@@ -126,7 +149,7 @@ getList()
         type="warning"
         v-hasPermi="['infra:job:export']"
         :loading="tableObject.exportLoading"
-        @click="handleExport"
+        @click="exportList('定时任务.xls')"
       >
         <Icon icon="ep:download" class="mr-5px" /> {{ t('action.export') }}
       </el-button>
@@ -154,10 +177,24 @@ getList()
         <el-button link type="primary" v-hasPermi="['infra:job:update']" @click="handleUpdate(row)">
           <Icon icon="ep:edit" class="mr-1px" /> {{ t('action.edit') }}
         </el-button>
+        <el-button
+          link
+          type="primary"
+          v-hasPermi="['infra:job:update']"
+          @click="handleChangeStatus(row)"
+        >
+          <Icon icon="ep:edit" class="mr-1px" />
+          {{ row.status === InfraJobStatusEnum.STOP ? '开启' : '暂停' }}
+        </el-button>
         <el-button link type="primary" v-hasPermi="['infra:job:query']" @click="handleDetail(row)">
           <Icon icon="ep:view" class="mr-1px" /> {{ t('action.detail') }}
         </el-button>
-        <el-button link type="primary" v-hasPermi="['infra:job:delete']" @click="handleDelete(row)">
+        <el-button
+          link
+          type="primary"
+          v-hasPermi="['infra:job:delete']"
+          @click="delList(row.id, false)"
+        >
           <Icon icon="ep:delete" class="mr-1px" /> {{ t('action.del') }}
         </el-button>
         <el-button link type="primary" v-hasPermi="['infra:job:trigger']" @click="handleRun(row)">
@@ -176,7 +213,11 @@ getList()
       :schema="allSchemas.formSchema"
       :rules="rules"
       ref="formRef"
-    />
+    >
+      <template #cronExpression>
+        <Crontab v-model="cronExpression" :shortcuts="shortcuts" />
+      </template>
+    </Form>
     <!-- 对话框(详情) -->
     <Descriptions
       v-if="actionType === 'detail'"
