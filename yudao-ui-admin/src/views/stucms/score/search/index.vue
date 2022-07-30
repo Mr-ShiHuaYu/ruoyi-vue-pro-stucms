@@ -54,7 +54,8 @@
           size="mini"
           @click="handleImport"
           v-hasPermi="['system:score:import']"
-        >导入</el-button>
+        >导入
+        </el-button>
       </el-col>
 
       <el-col :span="1.5">
@@ -119,10 +120,9 @@
 </template>
 
 <script>
-import {listScore, updateScore} from '@/api/stucms/score/search'
+import {exportScoreExcel, listScore, updateScore} from '@/api/stucms/score/search'
 import ScoreRightToolbar from '@/views/stucms/score/RightToolbar'
 import ElemQuote from "@/views/components/elemQuote";
-import {exportExamExcel} from "@/api/stucms/exam";
 // import ExcelUpload from "@/views/components/excelUpload";
 
 export default {
@@ -362,11 +362,12 @@ export default {
       params.pageSize = undefined;
       this.$modal.confirm('是否确认导出所有成绩?').then(() => {
         this.exportLoading = true;
-        return exportExamExcel(params);
+        return exportScoreExcel(params);
       }).then(response => {
-        this.$download.excel(response, '成绩.xls');
+        this.$download.excel(response, `学生成绩_${new Date().getTime()}.xlsx`);
         this.exportLoading = false;
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导入按钮操作 */
     handleImport() {

@@ -25,4 +25,6 @@ public interface ErrorCodeConstants {
     ErrorCode EXAM_NOT_EXISTS = new ErrorCode(1010004001, "考试不存在");
 
 
+    // ========== 成绩 1010005001 ==========
+    ErrorCode SCORE_GT_FULL = new ErrorCode(1010005001, "不能超过课程:{}的总分:{}");
 }

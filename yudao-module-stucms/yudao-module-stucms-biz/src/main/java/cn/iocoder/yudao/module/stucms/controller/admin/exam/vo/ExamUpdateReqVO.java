@@ -1,9 +1,12 @@
 package cn.iocoder.yudao.module.stucms.controller.admin.exam.vo;
 
-import lombok.*;
-import java.util.*;
-import io.swagger.annotations.*;
-import javax.validation.constraints.*;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+import javax.validation.constraints.NotNull;
 
 @ApiModel("管理后台 - 考试更新 Request VO")
 @Data

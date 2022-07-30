@@ -57,6 +57,8 @@ export default {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: "warning",
+      // 用于显示红色,支持直接传入 html
+      dangerouslyUseHTMLString: true
     })
   },
   // 提交内容

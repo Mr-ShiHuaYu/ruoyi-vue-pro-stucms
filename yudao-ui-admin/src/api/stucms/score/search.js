@@ -9,36 +9,21 @@ export function listScore(query) {
   })
 }
 
-// 查询成绩详细
-export function getScore(scoreId) {
-  return request({
-    url: '/stucms/score/' + scoreId,
-    method: 'get'
-  })
-}
-
-// 新增成绩
-export function addScore(data) {
-  return request({
-    url: '/stucms/score',
-    method: 'post',
-    data: data
-  })
-}
-
 // 修改成绩
 export function updateScore(data) {
   return request({
-    url: '/stucms/score',
+    url: '/stucms/score/update',
     method: 'put',
     data: data
   })
 }
 
-// 删除成绩
-export function delScore(scoreId) {
+// 导出 Excel
+export function exportScoreExcel(query) {
   return request({
-    url: '/stucms/score/' + scoreId,
-    method: 'delete'
+    url: '/stucms/score/export-excel',
+    method: 'get',
+    params: query,
+    responseType: 'blob'
   })
 }

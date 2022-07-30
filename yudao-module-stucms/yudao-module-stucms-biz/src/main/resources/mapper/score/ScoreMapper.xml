@@ -21,11 +21,18 @@
             st.student_id,
             e.exam_id
         ORDER BY
-            e.exam_id
+            e.exam_id,
+            st.student_id
     </sql>
 
     <select id="selectScoreSearchPageByXml"
             resultType="cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchRespVO">
         <include refid="selectScoreSearchPage"/>
     </select>
+
+    <select id="selectScoreSearchListByXml"
+            resultType="cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchRespVO">
+        <include refid="selectScoreSearchPage"/>
+    </select>
+
 </mapper>
