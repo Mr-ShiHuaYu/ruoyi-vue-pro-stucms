@@ -25,7 +25,7 @@ import static cn.iocoder.yudao.module.stucms.enums.ErrorCodeConstants.SCORE_IMPO
 /**
  * 因为课程名称是动态的,所以,不能使用一个固定的类来导入
  */
-public class ScoreImportListener extends AnalysisEventListener<Map<Integer, String>> implements ExcelListener<Map<Integer, String>> {
+public class ScoreImportListener extends AnalysisEventListener<Map<Integer, String>> {
     private final Boolean isUpdateSupport;
     private final StringBuilder successMsg = new StringBuilder();
     private final StringBuilder failureMsg = new StringBuilder();
@@ -69,26 +69,42 @@ public class ScoreImportListener extends AnalysisEventListener<Map<Integer, Stri
             String title = this.headMap.get(idx);
             rowMap.put(title, col);
         });
-        // 此时的map:{考试=考试, 生物=6, 历史=9, 语文=1, 英语=3, 政治=8, 姓名=俞, 物理=4, 学号=1, 数学=2, 化学=5, 地理=7}
-        // 检查姓名和学号是否是正确的,根据姓名和学号去查找,如果找不到,就抛出异常
+        // 此时的rowMap:{考试=考试, 生物=6, 历史=9, 语文=1, 英语=3, 政治=8, 姓名=俞, 物理=4, 学号=1, 数学=2, 化学=5, 地理=7}
+        List<String> courseCols = this.checkRowValid(rowMap); // 检查每一行数据的有效性
+
+        // 到此,校验完毕,开始插入或更新
+        this.doInsertOrUpdate(rowMap, courseCols);
+    }
+
+
+    /**
+     * 检查excel的每一行数据有效性
+     *
+     * @param rowMap
+     * @return
+     */
+    private List<String> checkRowValid(HashMap<String, String> rowMap) {
         this.checkStudentUidExists(rowMap);
         this.checkStudentNameExists(rowMap);
-        // 检查考试名称
         this.checkExamNameExists(rowMap);
 
         List<CourseDO> courseList = this.courseMapper.selectList(); // 所有课程名称
         List<String> courseCols = CollectionUtils.convertList(courseList, CourseDO::getCourseName);// 课程名称的list
         this.headMap.forEach((idx, col) -> {
             if (courseCols.contains(col)) {
+                // 只有在列的名称在课程名称列表中才会进来,检查课程名称和分数
                 this.checkCourseNameExists(col); // 检查课程名称是否存在
                 this.checkScoreRange(rowMap, col); // 检查分数是否合格
             }
         });
+        return courseCols;
+    }
 
+    private void doInsertOrUpdate(HashMap<String, String> rowMap, List<String> courseCols) {
         StudentDO stuStudent = this.studentMapper.selectOneByUid(rowMap.get("学号")); // 因为经过上面的检查,这里获取到的一定是有学生的
-        // 到此,校验完毕,开始插入
         this.headMap.forEach((idx, col) -> {
             if (courseCols.contains(col)) {
+                // 只有在列的名称在课程名称列表中才会进来
                 CourseDO stuCourse = this.courseMapper.selectOneByCourseName(col);
                 // 1先根据3个id去查询stu_score表中有没有这个成绩,如果有,再判断是否isUpdateSupport,如果是,则更新,否则报错已存在
                 ExamDO stuExam = this.examMapper.selectOneByExamName(rowMap.get("考试"));
@@ -119,6 +135,12 @@ public class ScoreImportListener extends AnalysisEventListener<Map<Integer, Stri
         this.successMsg.append("<br/>").append(this.successNum).append(stuStudent.getStudentName()).append("导入成功");
     }
 
+    /**
+     * 检查分数是否在课程的满分范围内
+     *
+     * @param rowMap
+     * @param col
+     */
     private void checkScoreRange(HashMap<String, String> rowMap, String col) {
         int score = Integer.parseInt(rowMap.get(col));
         CourseDO stuCourse = this.courseMapper.selectOneByCourseName(col);
@@ -128,6 +150,11 @@ public class ScoreImportListener extends AnalysisEventListener<Map<Integer, Stri
         }
     }
 
+    /**
+     * 检查课程名称是否存在
+     *
+     * @param col
+     */
     private void checkCourseNameExists(String col) {
         CourseDO stuCourse = this.courseMapper.selectOneByCourseName(col);
         if (stuCourse == null) {
@@ -137,6 +164,11 @@ public class ScoreImportListener extends AnalysisEventListener<Map<Integer, Stri
     }
 
 
+    /**
+     * 检查学生学号是否存在
+     *
+     * @param rowMap
+     */
     private void checkStudentUidExists(HashMap<String, String> rowMap) {
         String studentUid = rowMap.get("学号");
         StudentDO stuStudent = this.studentMapper.selectOneByUid(studentUid);
@@ -146,6 +178,11 @@ public class ScoreImportListener extends AnalysisEventListener<Map<Integer, Stri
         }
     }
 
+    /**
+     * 检查学生名字是否存在
+     *
+     * @param rowMap
+     */
     private void checkStudentNameExists(HashMap<String, String> rowMap) {
         String studentName = rowMap.get("姓名");
         StudentDO stuStudent = this.studentMapper.selectOne(StudentDO::getStudentName, studentName);
@@ -155,6 +192,11 @@ public class ScoreImportListener extends AnalysisEventListener<Map<Integer, Stri
         }
     }
 
+    /**
+     * 检查考试名称是否存在
+     *
+     * @param rowMap
+     */
     private void checkExamNameExists(HashMap<String, String> rowMap) {
         String examName = rowMap.get("考试");
         ExamDO stuExam = this.examMapper.selectOne(ExamDO::getExamName, examName);
@@ -168,27 +210,10 @@ public class ScoreImportListener extends AnalysisEventListener<Map<Integer, Stri
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
-
+        this.successMsg.insert(0, "恭喜您，已全部导入成功！共 " + this.successNum + "条，数据如下：");
     }
 
-    @Override
-    public ExcelResult<Map<Integer, String>> getExcelResult() {
-        return new ExcelResult<Map<Integer, String>>() {
-            @Override
-            public List<Map<Integer, String>> getList() {
-                return null;
-            }
-
-            @Override
-            public List<String> getErrorList() {
-                return null;
-            }
-
-            @Override
-            public String getAnalysis() {
-                ScoreImportListener.this.successMsg.insert(0, "恭喜您，已全部导入成功！共 " + ScoreImportListener.this.successNum + "条，数据如下：");
-                return ScoreImportListener.this.successMsg.toString();
-            }
-        };
+    public String getMessage() {
+        return this.successMsg.toString();
     }
 }

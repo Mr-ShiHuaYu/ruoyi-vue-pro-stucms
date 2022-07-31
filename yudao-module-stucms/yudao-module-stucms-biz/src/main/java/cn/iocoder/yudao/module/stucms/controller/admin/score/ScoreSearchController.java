@@ -11,7 +11,6 @@ import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSear
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchUpdateReqVO;
 import cn.iocoder.yudao.module.stucms.convert.course.CourseConvert;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.course.CourseDO;
-import cn.iocoder.yudao.module.stucms.listener.ExcelResult;
 import cn.iocoder.yudao.module.stucms.listener.ScoreImportListener;
 import cn.iocoder.yudao.module.stucms.service.course.CourseService;
 import cn.iocoder.yudao.module.stucms.service.exam.ExamService;
@@ -119,7 +118,6 @@ public class ScoreSearchController {
         EasyExcel.read(file.getInputStream(), scoreImportListener)
             .headRowNumber(2)
             .sheet().doRead();
-        ExcelResult<Map<Integer, String>> result = scoreImportListener.getExcelResult();
-        return success(result.getAnalysis());
+        return success(scoreImportListener.getMessage());
     }
 }
