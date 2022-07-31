@@ -3,7 +3,10 @@ package cn.iocoder.yudao.module.stucms.service.course;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.*;
+import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CourseCreateReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CourseExportReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CoursePageReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.CourseUpdateReqVO;
 import cn.iocoder.yudao.module.stucms.convert.course.CourseConvert;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.course.CourseDO;
 import cn.iocoder.yudao.module.stucms.dal.mysql.course.CourseMapper;
@@ -125,7 +128,7 @@ public class CourseServiceImpl implements CourseService {
         if (StrUtil.isBlank(courseName)) {
             return;
         }
-        CourseDO course = this.courseMapper.selectByCourseName(courseName);
+        CourseDO course = this.courseMapper.selectOneByCourseName(courseName);
         if (course == null) {
             return;
         }

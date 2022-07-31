@@ -19,26 +19,29 @@ import java.util.List;
 public interface StudentMapper extends BaseMapperX<StudentDO> {
 
     default PageResult<StudentDO> selectPage(StudentPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<StudentDO>()
-                .likeIfPresent(StudentDO::getStudentUid, reqVO.getStudentUid())
-                .likeIfPresent(StudentDO::getStudentName, reqVO.getStudentName())
-                .eqIfPresent(StudentDO::getSex, reqVO.getSex())
-                .likeIfPresent(StudentDO::getPhone, reqVO.getPhone())
-                .likeIfPresent(StudentDO::getSysid, reqVO.getSysid())
-                .eqIfPresent(StudentDO::getJishu, reqVO.getJishu())
-                .eqIfPresent(StudentDO::getLiushou, reqVO.getLiushou()));
+        return this.selectPage(reqVO, new LambdaQueryWrapperX<StudentDO>()
+            .likeIfPresent(StudentDO::getStudentUid, reqVO.getStudentUid())
+            .likeIfPresent(StudentDO::getStudentName, reqVO.getStudentName())
+            .eqIfPresent(StudentDO::getSex, reqVO.getSex())
+            .likeIfPresent(StudentDO::getPhone, reqVO.getPhone())
+            .likeIfPresent(StudentDO::getSysid, reqVO.getSysid())
+            .eqIfPresent(StudentDO::getJishu, reqVO.getJishu())
+            .eqIfPresent(StudentDO::getLiushou, reqVO.getLiushou()));
     }
 
     default List<StudentDO> selectList(StudentExportReqVO reqVO) {
-        return selectList(new LambdaQueryWrapperX<StudentDO>()
-                .likeIfPresent(StudentDO::getStudentUid, reqVO.getStudentUid())
-                .likeIfPresent(StudentDO::getStudentName, reqVO.getStudentName())
-                .eqIfPresent(StudentDO::getSex, reqVO.getSex())
-                .likeIfPresent(StudentDO::getPhone, reqVO.getPhone())
-                .likeIfPresent(StudentDO::getSysid, reqVO.getSysid())
-                .eqIfPresent(StudentDO::getJishu, reqVO.getJishu())
-                .eqIfPresent(StudentDO::getLiushou, reqVO.getLiushou())
-                .betweenIfPresent(StudentDO::getCreateTime, reqVO.getCreateTime()));
+        return this.selectList(new LambdaQueryWrapperX<StudentDO>()
+            .likeIfPresent(StudentDO::getStudentUid, reqVO.getStudentUid())
+            .likeIfPresent(StudentDO::getStudentName, reqVO.getStudentName())
+            .eqIfPresent(StudentDO::getSex, reqVO.getSex())
+            .likeIfPresent(StudentDO::getPhone, reqVO.getPhone())
+            .likeIfPresent(StudentDO::getSysid, reqVO.getSysid())
+            .eqIfPresent(StudentDO::getJishu, reqVO.getJishu())
+            .eqIfPresent(StudentDO::getLiushou, reqVO.getLiushou())
+            .betweenIfPresent(StudentDO::getCreateTime, reqVO.getCreateTime()));
     }
 
+    default StudentDO selectOneByUid(String Uid) {
+        return this.selectOne(StudentDO::getStudentUid, Uid);
+    }
 }

@@ -19,17 +19,21 @@ import java.util.List;
 public interface ExamMapper extends BaseMapperX<ExamDO> {
 
     default PageResult<ExamDO> selectPage(ExamPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<ExamDO>()
-                .likeIfPresent(ExamDO::getExamName, reqVO.getExamName())
-                .betweenIfPresent(ExamDO::getExamTime, reqVO.getExamTime())
-                .orderByDesc(ExamDO::getExamId));
+        return this.selectPage(reqVO, new LambdaQueryWrapperX<ExamDO>()
+            .likeIfPresent(ExamDO::getExamName, reqVO.getExamName())
+            .betweenIfPresent(ExamDO::getExamTime, reqVO.getExamTime())
+            .orderByDesc(ExamDO::getExamId));
     }
 
     default List<ExamDO> selectList(ExamExportReqVO reqVO) {
-        return selectList(new LambdaQueryWrapperX<ExamDO>()
-                .likeIfPresent(ExamDO::getExamName, reqVO.getExamName())
-                .betweenIfPresent(ExamDO::getExamTime, reqVO.getExamTime())
-                .orderByDesc(ExamDO::getExamId));
+        return this.selectList(new LambdaQueryWrapperX<ExamDO>()
+            .likeIfPresent(ExamDO::getExamName, reqVO.getExamName())
+            .betweenIfPresent(ExamDO::getExamTime, reqVO.getExamTime())
+            .orderByDesc(ExamDO::getExamId));
     }
 
+    default ExamDO selectOneByExamName(String examName) {
+        return this.selectOne(new LambdaQueryWrapperX<ExamDO>()
+            .eqIfPresent(ExamDO::getExamName, examName));
+    }
 }
