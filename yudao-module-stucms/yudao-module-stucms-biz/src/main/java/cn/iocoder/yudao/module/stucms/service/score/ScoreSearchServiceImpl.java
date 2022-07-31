@@ -154,6 +154,47 @@ public class ScoreSearchServiceImpl implements ScoreSearchService {
         }
     }
 
+    @Override
+    public void getImportTemplate(String sheetName, HttpServletResponse response) {
+        try {
+            String filename = sheetName + ".xlsx";
+            // 第一行的大标题
+            String bigTitle = "学生成绩导入模板";
+            // response.reset();
+            ServletOutputStream os = response.getOutputStream();
+
+            // 设置标题行和内容样式策略
+            HorizontalCellStyleStrategy horizontalCellStyleStrategy =
+                new HorizontalCellStyleStrategy(ExcelUtil.getHeadStyle(), ExcelUtil.getCellStyle());
+
+            // 第二行excel的列名,标题行
+            List<List<String>> header = this.getExcelTemplateHeader();
+            EasyExcel.write(os)
+                // 第一行大标题样式设置
+                .registerWriteHandler(new ExcelUtil.ExcelBigTitleStyle(bigTitle, header.size()))
+                //设置默认样式及写入头信息开始的行数
+                .useDefaultStyle(true).relativeHeadRowIndex(1)
+                // 表头、内容样式设置
+                .registerWriteHandler(horizontalCellStyleStrategy)
+                // 统一设置列宽为25
+                .registerWriteHandler(new SimpleColumnWidthStyleStrategy(15))
+                // 设置自动列宽则
+                // .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .head(header)
+                // 设置不要自动关闭流,交给 Servlet 自己处理
+                .autoCloseStream(false)
+                // 设置sheet名
+                .sheet(sheetName)
+                // 写入数据
+                .doWrite(new ArrayList<>());
+            ExcelUtil.setAttachmentResponseHeader(response, filename);
+            // 设置响应头为excel
+            // response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8");
+        } catch (IOException e) {
+            throw new RuntimeException("学生成绩导入模板导出异常");
+        }
+    }
+
     /**
      * 检查分数的范围是否大于课程总分
      *

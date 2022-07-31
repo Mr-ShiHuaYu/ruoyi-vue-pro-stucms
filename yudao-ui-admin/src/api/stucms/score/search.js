@@ -27,3 +27,17 @@ export function exportScoreExcel(query) {
     responseType: 'blob'
   })
 }
+
+
+// 下载导入模板
+export function importTemplate() {
+  return request({
+    url: '/stucms/score/get-import-template',
+    method: 'get',
+    responseType: 'blob'
+  })
+}
+
+export function uploadUrl() {
+  return process.env.VUE_APP_BASE_API + "/admin-api/stucms/score/import";
+}

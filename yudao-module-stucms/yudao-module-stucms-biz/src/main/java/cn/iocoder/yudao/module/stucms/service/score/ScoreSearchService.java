@@ -27,4 +27,6 @@ public interface ScoreSearchService {
     List<ScoreSearchRespVO> getScoreSearchList(ScoreSearchExportReqVO exportReqVO);
 
     void exportExcel(List<Map<String, Object>> scoreList, String fileName, HttpServletResponse response);
+
+    void getImportTemplate(String sheetName, HttpServletResponse response);
 }

@@ -11,15 +11,21 @@ import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSear
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchUpdateReqVO;
 import cn.iocoder.yudao.module.stucms.convert.course.CourseConvert;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.course.CourseDO;
+import cn.iocoder.yudao.module.stucms.listener.ExcelResult;
+import cn.iocoder.yudao.module.stucms.listener.ScoreImportListener;
 import cn.iocoder.yudao.module.stucms.service.course.CourseService;
 import cn.iocoder.yudao.module.stucms.service.exam.ExamService;
 import cn.iocoder.yudao.module.stucms.service.score.ScoreSearchService;
+import com.alibaba.excel.EasyExcel;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -92,5 +98,28 @@ public class ScoreSearchController {
         // 导出 Excel
         // 不能使用定义好class的方式导出excel,因为,excel中的课程是动态的,这里只能动态的导出
         this.scoreSearchService.exportExcel(scoreList, "学生成绩", response);
+    }
+
+    @GetMapping("/get-import-template")
+    @ApiOperation("获得导入成绩模板")
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        this.scoreSearchService.getImportTemplate("成绩", response);
+    }
+
+    @PostMapping("/import")
+    @ApiOperation("导入成绩")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "file", value = "Excel 文件", required = true, dataTypeClass = MultipartFile.class),
+        @ApiImplicitParam(name = "updateSupport", value = "是否支持更新，默认为 false", example = "true", dataTypeClass = Boolean.class)
+    })
+    @PreAuthorize("@ss.hasPermission('stucms:score:import')")
+    public CommonResult<String> importExcel(@RequestParam("file") MultipartFile file,
+                                            @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception {
+        ScoreImportListener scoreImportListener = new ScoreImportListener(updateSupport);
+        EasyExcel.read(file.getInputStream(), scoreImportListener)
+            .headRowNumber(2)
+            .sheet().doRead();
+        ExcelResult<Map<Integer, String>> result = scoreImportListener.getExcelResult();
+        return success(result.getAnalysis());
     }
 }

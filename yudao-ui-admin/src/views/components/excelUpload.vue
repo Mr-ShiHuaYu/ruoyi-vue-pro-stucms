@@ -2,16 +2,16 @@
   <!-- 用户导入对话框 -->
   <el-dialog v-dialogDrag :title="title" :visible.sync="visible" width="400px" append-to-body>
     <el-upload
-        ref="upload"
-        :limit="1"
-        accept=".xlsx, .xls"
-        :headers="upload.headers"
-        :action="absoluteUploadUrl + '?updateSupport=' + upload.updateSupport"
-        :disabled="upload.isUploading"
-        :on-progress="handleFileUploadProgress"
-        :on-success="handleFileSuccess"
-        :auto-upload="false"
-        drag
+      ref="upload"
+      :limit="1"
+      accept=".xlsx, .xls"
+      :headers="upload.headers"
+      :action="uploadUrl + '?updateSupport=' + upload.updateSupport"
+      :disabled="upload.isUploading"
+      :on-progress="handleFileUploadProgress"
+      :on-success="handleFileSuccess"
+      :auto-upload="false"
+      drag
     >
       <i class="el-icon-upload"></i>
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -21,7 +21,8 @@
           是否更新已经存在的数据
         </div>
         <span>仅允许导入xls、xlsx格式文件。</span>
-        <el-link v-if="templateUrl.length" type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;"
+        <el-link type="primary" :underline="false"
+                 style="font-size:12px;vertical-align: baseline;"
                  @click="importTemplate">下载模板
         </el-link>
       </div>
@@ -34,7 +35,7 @@
 </template>
 
 <script>
-// import {getToken} from "@/utils/auth";
+import {getBaseHeader} from "@/utils/request";
 
 export default {
   name: "ExcelUpload",
@@ -51,10 +52,9 @@ export default {
       type: String,
       required: true
     },
-    templateUrl: {
-      type: String,
-      required: false,
-      default: ""
+    importRequest: {
+      type: Function,
+      required: true
     }
   },
   computed: {
@@ -65,9 +65,6 @@ export default {
       set(val) {
         this.$emit("update:open", val)
       }
-    },
-    absoluteUploadUrl() {
-      return process.env.VUE_APP_BASE_API + "/" + this.uploadUrl.replace(/^\/+/g, '');
     }
   },
   data() {
@@ -79,14 +76,16 @@ export default {
         // 是否更新已经存在的用户数据
         updateSupport: 0,
         // 设置上传的请求头部
-        headers: {Authorization: "Bearer " + getToken()},
+        headers: getBaseHeader(),
       },
     }
   },
   methods: {
     /** 下载模板操作 */
     importTemplate() {
-      this.download(this.templateUrl, {}, `${this.title}模板_${new Date().getTime()}.xlsx`)
+      this.importRequest().then(response => {
+        this.$download.excel(response, `${this.title}_${new Date().getTime()}.xlsx`);
+      });
     },
     // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {

@@ -53,7 +53,7 @@
           icon="el-icon-upload2"
           size="mini"
           @click="handleImport"
-          v-hasPermi="['system:score:import']"
+          v-hasPermi="['stucms:score:import']"
         >导入
         </el-button>
       </el-col>
@@ -109,25 +109,25 @@
     <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNo" :limit.sync="queryParams.pageSize"
                 @pagination="getList"/>
 
-    <!--<excel-upload-->
-    <!--  :title="upload.title"-->
-    <!--  :open.sync="upload.open"-->
-    <!--  :upload-url="upload.uploadUrl"-->
-    <!--  :template-url="upload.templateUrl"-->
-    <!--  @success="getList"-->
-    <!--/>-->
+    <excel-upload
+      :title="upload.title"
+      :open.sync="upload.open"
+      :upload-url="upload.uploadUrl"
+      :import-request="upload.importRequest"
+      @success="getList"
+    />
   </div>
 </template>
 
 <script>
-import {exportScoreExcel, listScore, updateScore} from '@/api/stucms/score/search'
+import {exportScoreExcel, importTemplate, listScore, updateScore, uploadUrl} from '@/api/stucms/score/search'
 import ScoreRightToolbar from '@/views/stucms/score/RightToolbar'
 import ElemQuote from "@/views/components/elemQuote";
-// import ExcelUpload from "@/views/components/excelUpload";
+import ExcelUpload from "@/views/components/excelUpload";
 
 export default {
   name: 'Score',
-  components: {ElemQuote, ScoreRightToolbar},
+  components: {ElemQuote, ScoreRightToolbar, ExcelUpload},
   data() {
     return {
       // 遮罩层
@@ -145,11 +145,11 @@ export default {
         // 是否显示弹出层
         open: false,
         // 弹出层标题
-        title: "成绩导入",
+        title: "学生成绩导入模板",
         // 上传的地址
-        uploadUrl: "stucms/score/importData",
-        // 下载模板地址
-        templateUrl: "stucms/score/importTemplate"
+        uploadUrl: uploadUrl(),
+        // 下载模板地址的request对象
+        importRequest: importTemplate
       },
       // 查询参数
       queryParams: {

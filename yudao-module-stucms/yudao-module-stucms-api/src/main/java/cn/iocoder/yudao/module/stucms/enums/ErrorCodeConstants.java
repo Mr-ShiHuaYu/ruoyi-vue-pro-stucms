@@ -5,7 +5,7 @@ import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 
 /**
  * Stucms 错误码枚举类
- *
+ * <p>
  * stucms 系统，使用 1-010-000-000 段
  */
 public interface ErrorCodeConstants {
@@ -27,4 +27,5 @@ public interface ErrorCodeConstants {
 
     // ========== 成绩 1010005001 ==========
     ErrorCode SCORE_GT_FULL = new ErrorCode(1010005001, "不能超过课程:{}的总分:{}");
+    ErrorCode SCORE_IMPORT_EXCEL_ERROR = new ErrorCode(1010005002, "成绩导入失败,失败原因:{}");
 }
