@@ -43,6 +43,14 @@ export function getExamPage(query) {
   })
 }
 
+export function getExamList(query) {
+  return request({
+    url: '/stucms/exam/list',
+    method: 'get',
+    params: query
+  })
+}
+
 // 导出考试 Excel
 export function exportExamExcel(query) {
   return request({

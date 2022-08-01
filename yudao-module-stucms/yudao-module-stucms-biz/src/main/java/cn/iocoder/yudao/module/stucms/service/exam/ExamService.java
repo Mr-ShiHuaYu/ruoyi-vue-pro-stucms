@@ -31,10 +31,10 @@ public interface ExamService {
     void updateExam(@Valid ExamUpdateReqVO updateReqVO);
 
     /**
-    * 批量删除考试
-    *
-    * @param ids 编号
-    */
+     * 批量删除考试
+     *
+     * @param ids 编号
+     */
     void deleteExam(Collection<Long> ids);
 
     /**
@@ -55,7 +55,6 @@ public interface ExamService {
     /**
      * 获得考试列表
      *
-     * @param ids 编号
      * @return 考试列表
      */
     List<ExamDO> getExamList(Collection<Long> ids);

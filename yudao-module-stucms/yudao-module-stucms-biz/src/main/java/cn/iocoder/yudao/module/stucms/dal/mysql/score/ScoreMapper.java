@@ -5,6 +5,9 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.QueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.util.MyBatisUtils;
+import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllCoursePieReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllRespVo;
+import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreSearchAllReqVO;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchExportReqVO;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchPageReqVO;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchRespVO;
@@ -85,4 +88,48 @@ public interface ScoreMapper extends BaseMapperX<ScoreDO> {
     // 通过xml查询出全部列表
     List<ScoreSearchRespVO> selectScoreSearchListByXml(@Param("ew") Wrapper<ScoreDO> wrapper);
 
+    default List<ScoreAllRespVo> selectScoreAllList(ScoreSearchAllReqVO reqVO) {
+        QueryWrapperX<ScoreDO> wrapperX = new QueryWrapperX<ScoreDO>()
+            .eqIfPresent("e.exam_id", reqVO.getExamId());
+        return this.selectScoreAllListByXml(wrapperX);
+    }
+
+    List<ScoreAllRespVo> selectScoreAllListByXml(@Param("ew") Wrapper<ScoreDO> wrapperX);
+
+    default Long selectYouXiuCount(float youXiuMin, ScoreAllCoursePieReqVO reqVO) {
+        return this.selectCount(new LambdaQueryWrapperX<ScoreDO>()
+            .eq(ScoreDO::getCourseId, reqVO.getCid())
+            .eq(ScoreDO::getExamId, reqVO.getEid())
+            .geIfPresent(ScoreDO::getScore, youXiuMin)
+        );
+    }
+
+    default Long selectLiangHaoCount(float youXiuScore, float lianghaoScore, ScoreAllCoursePieReqVO reqVO) {
+        // 良好<=良好数量 < 优秀
+        return this.selectCount(new LambdaQueryWrapperX<ScoreDO>()
+            .eq(ScoreDO::getCourseId, reqVO.getCid())
+            .eq(ScoreDO::getExamId, reqVO.getEid())
+            .ltIfPresent(ScoreDO::getScore, youXiuScore)
+            .geIfPresent(ScoreDO::getScore, lianghaoScore)
+        );
+    }
+
+    default Long selectJiGeCount(float lianghaoScore, float jiGeScore, ScoreAllCoursePieReqVO reqVO) {
+        // 及格<=及格数量 < 良好
+        return this.selectCount(new LambdaQueryWrapperX<ScoreDO>()
+            .eq(ScoreDO::getCourseId, reqVO.getCid())
+            .eq(ScoreDO::getExamId, reqVO.getEid())
+            .ltIfPresent(ScoreDO::getScore, lianghaoScore)
+            .geIfPresent(ScoreDO::getScore, jiGeScore)
+        );
+    }
+
+    default Long selectBuJiGeCount(float jigeScore, ScoreAllCoursePieReqVO reqVO) {
+        // 不及格数量<及格
+        return this.selectCount(new LambdaQueryWrapperX<ScoreDO>()
+            .eq(ScoreDO::getCourseId, reqVO.getCid())
+            .eq(ScoreDO::getExamId, reqVO.getEid())
+            .ltIfPresent(ScoreDO::getScore, jigeScore)
+        );
+    }
 }

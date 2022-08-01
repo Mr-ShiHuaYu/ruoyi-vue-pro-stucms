@@ -10,6 +10,9 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.stucms.enums.ErrorCodeConstants.COURSE_NOT_EXISTS;
+
 /**
  * 课程 Mapper
  *
@@ -38,4 +41,13 @@ public interface CourseMapper extends BaseMapperX<CourseDO> {
     default CourseDO selectOneByCourseName(String CourseName) {
         return this.selectOne(CourseDO::getCourseName, CourseName);
     }
+
+    default Integer selectCourseFullById(Long cid) {
+        CourseDO courseDO = this.selectById(cid);
+        if (courseDO == null) {
+            throw exception(COURSE_NOT_EXISTS);
+        }
+        return courseDO.getCourseFull();
+    }
+
 }

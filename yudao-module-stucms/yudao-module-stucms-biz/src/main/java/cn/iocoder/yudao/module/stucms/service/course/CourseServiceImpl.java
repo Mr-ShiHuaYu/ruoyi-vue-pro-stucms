@@ -112,6 +112,12 @@ public class CourseServiceImpl implements CourseService {
         return this.courseMapper.selectList();
     }
 
+    @Override
+    public Integer getCourseFullById(Long cid) {
+        return this.courseMapper.selectCourseFullById(cid);
+    }
+
+
     private void checkCreateOrUpdate(Long id, String courseName) {
         this.checkCourseNameUnique(id, courseName);
     }

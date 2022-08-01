@@ -9,3 +9,9 @@ wx: # 参见 https://github.com/Wechat-Group/WxJava/blob/develop/spring-boot-sta
 #      type: RedisTemplate # 采用 RedisTemplate 操作 Redis，会自动从 Spring 中获取
 #      key-prefix: wx # Redis Key 的前缀 TODO 芋艿：解决下 Redis key 管理的配置
 #      http-client-type: HttpClient # 采用 HttpClient 请求微信公众号平台
+
+# 优秀,良好,及格的占比,如优秀90就是成绩为满分的90%及以上为优秀,用于课程分析
+stucms:
+  youxiu: 90
+  lianghao: 80
+  jige: 60

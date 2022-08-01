@@ -1,6 +1,5 @@
 package cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search;
 
-import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,7 +10,6 @@ import java.math.BigDecimal;
 
 @Data
 @ApiModel("成绩视图对象")
-@ExcelIgnoreUnannotated
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ScoreSearchRespVO {
 

@@ -35,4 +35,73 @@
         <include refid="selectScoreSearchPage"/>
     </select>
 
+    <select id="selectScoreAllListByXml"
+            resultType="cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllRespVo">
+        SELECT c.course_name            course,
+               c.course_id              cid,
+               e.exam_id                eid,
+               e.exam_name              exam,
+               c.course_full            `full`,
+               count(*)                 join_num,
+               sum(CASE
+                       WHEN sc.score >= (0.9 * (SELECT course_full FROM stucms_course WHERE course_id = c.course_id))
+                           THEN 1
+                       ELSE 0 END)      'youxiu',
+               sum(
+                       CASE
+
+                           WHEN sc.score >= (
+                                   0.8 * (
+                                   SELECT course_full
+                                   FROM stucms_course
+                                   WHERE course_id = c.course_id
+                               ))
+                               AND sc.score &lt; (
+                                       0.9 * (
+                                       SELECT course_full
+                                       FROM stucms_course
+                                       WHERE course_id = c.course_id
+                                   )) THEN
+                               1
+                           ELSE 0
+                           END
+                   )                    'lianghao',
+               sum(
+                       CASE
+
+                           WHEN sc.score >= (
+                                   0.6 * (
+                                   SELECT course_full
+                                   FROM stucms_course
+                                   WHERE course_id = c.course_id
+                               ))
+                               AND sc.score &lt; (
+                                       0.8 * (
+                                       SELECT course_full
+                                       FROM stucms_course
+                                       WHERE course_id = c.course_id
+                                   )) THEN
+                               1
+                           ELSE 0
+                           END
+                   )                    'jige',
+               sum(CASE
+                       WHEN sc.score &lt; (0.6 * (SELECT course_full FROM stucms_course WHERE course_id = c.course_id))
+                           THEN 1
+                       ELSE 0 END)      'bujige',
+               format(STD(sc.score), 2) std,
+               format(AVG(sc.score), 2) avg,
+               MAX(sc.score)            max,
+               min(sc.score)            min
+        FROM stucms_score sc
+                 JOIN stucms_course c ON c.course_id = sc.course_id
+                 JOIN stucms_student u ON u.student_id = sc.student_id
+                 JOIN stucms_exam e ON e.exam_id = sc.exam_id
+            ${ew.customSqlSegment}
+        GROUP BY
+            course
+        ORDER BY
+            cid
+    </select>
+
 </mapper>

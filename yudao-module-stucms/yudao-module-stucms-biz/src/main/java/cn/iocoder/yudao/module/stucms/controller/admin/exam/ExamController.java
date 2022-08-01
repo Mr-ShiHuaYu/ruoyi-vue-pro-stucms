@@ -1,30 +1,29 @@
 package cn.iocoder.yudao.module.stucms.controller.admin.exam;
 
-import org.springframework.web.bind.annotation.*;
-import javax.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.security.access.prepost.PreAuthorize;
-import io.swagger.annotations.*;
-
-import javax.validation.constraints.*;
-import javax.validation.*;
-import javax.servlet.http.*;
-import java.util.*;
-import java.io.IOException;
-
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
-
 import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.*;
-import cn.iocoder.yudao.module.stucms.dal.dataobject.exam.ExamDO;
 import cn.iocoder.yudao.module.stucms.convert.exam.ExamConvert;
+import cn.iocoder.yudao.module.stucms.dal.dataobject.exam.ExamDO;
 import cn.iocoder.yudao.module.stucms.service.exam.ExamService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
+import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.EXPORT;
 
 @Api(tags = "管理后台 - 考试")
 @RestController
@@ -39,14 +38,14 @@ public class ExamController {
     @ApiOperation("创建考试")
     @PreAuthorize("@ss.hasPermission('stucms:exam:create')")
     public CommonResult<Long> createExam(@Valid @RequestBody ExamCreateReqVO createReqVO) {
-        return success(examService.createExam(createReqVO));
+        return success(this.examService.createExam(createReqVO));
     }
 
     @PutMapping("/update")
     @ApiOperation("更新考试")
     @PreAuthorize("@ss.hasPermission('stucms:exam:update')")
     public CommonResult<Boolean> updateExam(@Valid @RequestBody ExamUpdateReqVO updateReqVO) {
-        examService.updateExam(updateReqVO);
+        this.examService.updateExam(updateReqVO);
         return success(true);
     }
 
@@ -55,7 +54,7 @@ public class ExamController {
     @ApiImplicitParam(name = "id", value = "编号", required = true, dataTypeClass = Long.class)
     @PreAuthorize("@ss.hasPermission('stucms:exam:delete')")
     public CommonResult<Boolean> deleteExam(@RequestParam("id") Collection<Long> ids) {
-        examService.deleteExam(ids);
+        this.examService.deleteExam(ids);
         return success(true);
     }
 
@@ -64,24 +63,24 @@ public class ExamController {
     @ApiImplicitParam(name = "id", value = "编号", required = true, example = "1024", dataTypeClass = Long.class)
     @PreAuthorize("@ss.hasPermission('stucms:exam:query')")
     public CommonResult<ExamRespVO> getExam(@RequestParam("id") Long id) {
-        ExamDO exam = examService.getExam(id);
+        ExamDO exam = this.examService.getExam(id);
         return success(ExamConvert.INSTANCE.convert(exam));
     }
 
     @GetMapping("/list")
     @ApiOperation("获得考试列表")
-    @ApiImplicitParam(name = "ids", value = "编号列表", required = true, example = "1024,2048", dataTypeClass = List.class)
     @PreAuthorize("@ss.hasPermission('stucms:exam:query')")
-    public CommonResult<List<ExamRespVO>> getExamList(@RequestParam("ids") Collection<Long> ids) {
-        List<ExamDO> list = examService.getExamList(ids);
-        return success(ExamConvert.INSTANCE.convertList(list));
+    public CommonResult<List<ExamSimpleVO>> getExamList() {
+        List<ExamSimpleVO> examList = this.examService.getSimpleExamList();
+
+        return success(examList);
     }
 
     @GetMapping("/page")
     @ApiOperation("获得考试分页")
     @PreAuthorize("@ss.hasPermission('stucms:exam:query')")
     public CommonResult<PageResult<ExamRespVO>> getExamPage(@Valid ExamPageReqVO pageVO) {
-        PageResult<ExamDO> pageResult = examService.getExamPage(pageVO);
+        PageResult<ExamDO> pageResult = this.examService.getExamPage(pageVO);
         return success(ExamConvert.INSTANCE.convertPage(pageResult));
     }
 
@@ -90,8 +89,8 @@ public class ExamController {
     @PreAuthorize("@ss.hasPermission('stucms:exam:export')")
     @OperateLog(type = EXPORT)
     public void exportExamExcel(@Valid ExamExportReqVO exportReqVO,
-              HttpServletResponse response) throws IOException {
-        List<ExamDO> list = examService.getExamList(exportReqVO);
+                                HttpServletResponse response) throws IOException {
+        List<ExamDO> list = this.examService.getExamList(exportReqVO);
         // 导出 Excel
         List<ExamExcelVO> datas = ExamConvert.INSTANCE.convertList02(list);
         ExcelUtils.write(response, "考试.xls", "数据", ExamExcelVO.class, datas);
