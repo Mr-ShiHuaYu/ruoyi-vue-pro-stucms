@@ -183,7 +183,7 @@ export default {
   computed: {
     columns: {
       get() {
-        if (!this.cachedColumns) {
+        if (!this.cachedColumns.length) {
           // 如果缓存列中没有值,则从数据中获取
           let columns = []
           let key = 0

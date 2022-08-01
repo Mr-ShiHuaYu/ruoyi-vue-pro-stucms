@@ -6,7 +6,7 @@
       :limit="1"
       accept=".xlsx, .xls"
       :headers="upload.headers"
-      :action="uploadUrl + '?updateSupport=' + upload.updateSupport"
+      :action="absoluteUploadUrl + '?updateSupport=' + upload.updateSupport"
       :disabled="upload.isUploading"
       :on-progress="handleFileUploadProgress"
       :on-success="handleFileSuccess"
@@ -65,6 +65,9 @@ export default {
       set(val) {
         this.$emit("update:open", val)
       }
+    },
+    absoluteUploadUrl() {
+      return process.env.VUE_APP_BASE_API + "/admin-api" + this.uploadUrl;
     }
   },
   data() {

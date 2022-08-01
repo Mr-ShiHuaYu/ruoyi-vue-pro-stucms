@@ -39,5 +39,5 @@ export function importTemplate() {
 }
 
 export function uploadUrl() {
-  return process.env.VUE_APP_BASE_API + "/admin-api/stucms/score/import";
+  return "/stucms/score/import";
 }
