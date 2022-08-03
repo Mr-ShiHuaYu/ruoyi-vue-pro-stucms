@@ -2,6 +2,7 @@
 @import './mixin.scss';
 @import './transition.scss';
 @import './element-ui.scss';
+@import './element-variables.scss';
 @import './sidebar.scss';
 @import './btn.scss';
 
@@ -208,6 +209,7 @@ aside {
   }
 }
 
+//之所以放这里,不放DetailTip组件中,是因为,在这里能获取到当前主题设置的$green颜色的值,能跟着主题的设置而改变颜色
 .el-popover.el-popper.table-score-all.show-tip {
   background-color: $green;
   color: #FFFFFF;
@@ -216,6 +218,22 @@ aside {
 
   .popper__arrow::after {
     border-right-color: $green;
+  }
+
+  &.danger {
+    background-color: $--color-danger;
+
+    .popper__arrow::after {
+      border-right-color: $--color-danger;
+    }
+  }
+
+  &.success {
+    background-color: $--color-success;
+
+    .popper__arrow::after {
+      border-right-color: $--color-success;
+    }
   }
 }
 

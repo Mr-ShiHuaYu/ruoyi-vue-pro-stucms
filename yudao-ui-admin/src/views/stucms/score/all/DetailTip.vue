@@ -2,9 +2,9 @@
   <el-popover
     v-if="row[column.property]>0"
     placement="right-start"
-    popper-class="table-score-all show-tip"
+    :popper-class="'table-score-all show-tip '+type"
     trigger="click">
-    <div v-html="row.content" v-if="row.content"></div>
+    <div v-html="row.content" v-if="show"></div>
     <el-tag
       slot="reference"
       @click="handleShowDetail(row, column)"
@@ -44,12 +44,12 @@ export default {
   },
   data() {
     return {
-      // loading: false
+      show: false
     }
   },
   methods: {
     handleShowDetail(row, column) {
-      row.content = ""
+      this.show = false
       // property为点击这一列的字段名,如 youxiu
       const formData = {
         cid: row.cid, eid: row.eid, field: column.property
@@ -60,15 +60,16 @@ export default {
             tip += item.name + ':' + item.score + '<br>';
           });
           row.content = tip
+          this.show = true
         }
       ).catch(() => {
       })
-
     },
   }
 }
 </script>
 
 <style scoped>
+
 
 </style>
