@@ -1,19 +1,20 @@
 package cn.iocoder.yudao.module.stucms.service.score;
 
+import cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil;
 import cn.iocoder.yudao.module.stucms.config.ScoreConfig;
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllChartPieRespVo;
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllCoursePieReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllRespVo;
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreSearchAllReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.*;
 import cn.iocoder.yudao.module.stucms.dal.mysql.course.CourseMapper;
 import cn.iocoder.yudao.module.stucms.dal.mysql.score.ScoreMapper;
 import cn.iocoder.yudao.module.stucms.service.course.CourseService;
+import cn.iocoder.yudao.module.stucms.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static cn.iocoder.yudao.module.stucms.enums.ErrorCodeConstants.SCORE_FIELD_NOT_EXISTS;
 
 @Service
 @Validated
@@ -45,6 +46,51 @@ public class ScoreAllServiceImpl implements ScoreAllService {
         Long buJiGeCount = this.getBuJiGeCount(reqVO); // 不及格数量
         ScoreAllChartPieRespVo buJigeVO = ScoreAllChartPieRespVo.builder().name("不及格").value(buJiGeCount).build();
         return Arrays.asList(youXiuVO, liangHaoVO, jigeVO, buJigeVO);
+    }
+
+    @Override
+    public List<ScoreAllDetailTipRespVo> getDetailTips(ScoreAllDetailTipReqVO reqVO) {
+        String field = reqVO.getField();
+        List<ScoreAllDetailTipRespVo> detailTipList;
+
+        Integer courseFull = this.courseService.getCourseFullById(reqVO.getCid());// 满分,如100
+        Float youxiu = this.scoreConfig.getYouxiu(); // 优秀比率,如 0.9
+        Float youxiuScore = youxiu * courseFull;// 满分*比率 =优秀具体的分数
+
+        Float lianghao = this.scoreConfig.getLianghao();
+        Float lianghaoScore = lianghao * courseFull;
+
+        Float jige = this.scoreConfig.getJige();
+        Float jigeScore = jige * courseFull;
+
+        switch (field) {
+            case "youxiu":
+                detailTipList = this.scoreMapper.selectYouXiuStudentList(youxiuScore, reqVO);
+                break;
+            case "lianghao":
+                detailTipList = this.scoreMapper.selectLiangHaoStudentList(youxiuScore, lianghaoScore, reqVO);
+                break;
+            case "jige":
+                detailTipList = this.scoreMapper.selectJiGeStudentList(lianghaoScore, jigeScore, reqVO);
+                break;
+            case "bujige":
+                detailTipList = this.scoreMapper.selectBuJiGeStudentList(jigeScore, reqVO);
+                break;
+            case "max":
+                detailTipList = this.scoreMapper.selectMaxScoreStudentList(reqVO);
+                break;
+            case "min":
+                detailTipList = this.scoreMapper.selectMinScoreStudentList(reqVO);
+                break;
+            default:
+                throw ServiceExceptionUtil.exception(SCORE_FIELD_NOT_EXISTS, field);
+        }
+        detailTipList.forEach(scoreVo -> {
+            // 去除分数中末尾的0,如:89.0转为89
+            String score = NumberUtils.getFloatValue(scoreVo.getScore());
+            scoreVo.setScore(score);
+        });
+        return detailTipList;
     }
 
     public Long getYouXiuCount(ScoreAllCoursePieReqVO reqVO) {

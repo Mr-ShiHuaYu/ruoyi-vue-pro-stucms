@@ -28,4 +28,6 @@ public interface ErrorCodeConstants {
     // ========== 成绩 1010005001 ==========
     ErrorCode SCORE_GT_FULL = new ErrorCode(1010005001, "不能超过课程:{}的总分:{}");
     ErrorCode SCORE_IMPORT_EXCEL_ERROR = new ErrorCode(1010005002, "成绩导入失败,失败原因:{}");
+
+    ErrorCode SCORE_FIELD_NOT_EXISTS = new ErrorCode(1010005003, "{}列字段不存在");
 }

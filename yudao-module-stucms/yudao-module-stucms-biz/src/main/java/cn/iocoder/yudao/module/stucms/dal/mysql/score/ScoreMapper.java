@@ -5,9 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.QueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.util.MyBatisUtils;
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllCoursePieReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllRespVo;
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreSearchAllReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.*;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchExportReqVO;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchPageReqVO;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchRespVO;
@@ -26,6 +24,22 @@ import java.util.List;
  */
 @Mapper
 public interface ScoreMapper extends BaseMapperX<ScoreDO> {
+    /**
+     * 通过xml查询出成绩分页,返回值和第一个参数必须是分页对象/List  IPage<T> 或者继承IPage<T>的类型
+     *
+     * @param page
+     * @param wrapper
+     * @return
+     */
+    Page<ScoreSearchRespVO> selectScoreSearchPageByXml(@Param("page") Page<ScoreDO> page, @Param("ew") Wrapper<ScoreDO> wrapper);
+
+    // 通过xml查询出全部列表
+    List<ScoreSearchRespVO> selectScoreSearchListByXml(@Param("ew") Wrapper<ScoreDO> wrapper);
+
+    List<ScoreAllRespVo> selectScoreAllListByXml(@Param("ew") Wrapper<ScoreDO> wrapperX);
+
+
+    List<ScoreAllDetailTipRespVo> selectStudentListByXml(@Param("ew") Wrapper<ScoreDO> wrapperX);
 
 
     default QueryWrapperX<ScoreDO> getScoreDOQueryWrapperX(String studentName, String studentUid, Long examId) {
@@ -47,16 +61,6 @@ public interface ScoreMapper extends BaseMapperX<ScoreDO> {
         Page<ScoreSearchRespVO> respVOPage = this.selectScoreSearchPageByXml(mpPage, this.getScoreDOQueryWrapperX(reqVO.getStudentName(), reqVO.getStudentUid(), reqVO.getExamId()));
         return new PageResult<>(respVOPage.getRecords(), respVOPage.getTotal());
     }
-
-    /**
-     * 通过xml查询出成绩分页,返回值和第一个参数必须是分页对象/List  IPage<T> 或者继承IPage<T>的类型
-     *
-     * @param page
-     * @param wrapper
-     * @return
-     */
-    Page<ScoreSearchRespVO> selectScoreSearchPageByXml(@Param("page") Page<ScoreDO> page, @Param("ew") Wrapper<ScoreDO> wrapper);
-
 
     /**
      * 通过学生ID,考试ID,课程ID 三方联合查询出scoreDo
@@ -85,51 +89,89 @@ public interface ScoreMapper extends BaseMapperX<ScoreDO> {
     }
 
 
-    // 通过xml查询出全部列表
-    List<ScoreSearchRespVO> selectScoreSearchListByXml(@Param("ew") Wrapper<ScoreDO> wrapper);
-
     default List<ScoreAllRespVo> selectScoreAllList(ScoreSearchAllReqVO reqVO) {
         QueryWrapperX<ScoreDO> wrapperX = new QueryWrapperX<ScoreDO>()
             .eqIfPresent("e.exam_id", reqVO.getExamId());
         return this.selectScoreAllListByXml(wrapperX);
     }
 
-    List<ScoreAllRespVo> selectScoreAllListByXml(@Param("ew") Wrapper<ScoreDO> wrapperX);
 
-    default Long selectYouXiuCount(float youXiuMin, ScoreAllCoursePieReqVO reqVO) {
-        return this.selectCount(new LambdaQueryWrapperX<ScoreDO>()
-            .eq(ScoreDO::getCourseId, reqVO.getCid())
-            .eq(ScoreDO::getExamId, reqVO.getEid())
-            .geIfPresent(ScoreDO::getScore, youXiuMin)
-        );
+    default LambdaQueryWrapperX<ScoreDO> getYouXiuWrapper(Float score, Long cid, Long eid) {
+        return new LambdaQueryWrapperX<ScoreDO>()
+            .eq(ScoreDO::getCourseId, cid)
+            .eq(ScoreDO::getExamId, eid)
+            .geIfPresent(ScoreDO::getScore, score);
     }
 
+
+    default Wrapper<ScoreDO> getLiangHaoWrapper(float youXiuScore, float liangHaoScore, Long cid, Long eid) {
+        return new LambdaQueryWrapperX<ScoreDO>()
+            .eq(ScoreDO::getCourseId, cid)
+            .eq(ScoreDO::getExamId, eid)
+            .ltIfPresent(ScoreDO::getScore, youXiuScore)
+            .geIfPresent(ScoreDO::getScore, liangHaoScore);
+    }
+
+    default Wrapper<ScoreDO> getJiGeWrapper(float lianghaoScore, float jiGeScore, Long cid, Long eid) {
+        return new LambdaQueryWrapperX<ScoreDO>()
+            .eq(ScoreDO::getCourseId, cid)
+            .eq(ScoreDO::getExamId, eid)
+            .ltIfPresent(ScoreDO::getScore, lianghaoScore)
+            .geIfPresent(ScoreDO::getScore, jiGeScore);
+    }
+
+    default Wrapper<ScoreDO> getBuJiGeWrapper(float jiGeScore, Long cid, Long eid) {
+        return new LambdaQueryWrapperX<ScoreDO>()
+            .eq(ScoreDO::getCourseId, cid)
+            .eq(ScoreDO::getExamId, eid)
+            .ltIfPresent(ScoreDO::getScore, jiGeScore);
+    }
+
+    // 选择优秀学生数量
+    default Long selectYouXiuCount(float youXiuMin, ScoreAllCoursePieReqVO reqVO) {
+        return this.selectCount(this.getYouXiuWrapper(youXiuMin, reqVO.getCid(), reqVO.getEid()));
+    }
+
+    // 选择良好学生数量
     default Long selectLiangHaoCount(float youXiuScore, float lianghaoScore, ScoreAllCoursePieReqVO reqVO) {
         // 良好<=良好数量 < 优秀
-        return this.selectCount(new LambdaQueryWrapperX<ScoreDO>()
-            .eq(ScoreDO::getCourseId, reqVO.getCid())
-            .eq(ScoreDO::getExamId, reqVO.getEid())
-            .ltIfPresent(ScoreDO::getScore, youXiuScore)
-            .geIfPresent(ScoreDO::getScore, lianghaoScore)
-        );
+        return this.selectCount(this.getLiangHaoWrapper(youXiuScore, lianghaoScore, reqVO.getCid(), reqVO.getEid()));
     }
 
+    // 及格学生数量
     default Long selectJiGeCount(float lianghaoScore, float jiGeScore, ScoreAllCoursePieReqVO reqVO) {
         // 及格<=及格数量 < 良好
-        return this.selectCount(new LambdaQueryWrapperX<ScoreDO>()
-            .eq(ScoreDO::getCourseId, reqVO.getCid())
-            .eq(ScoreDO::getExamId, reqVO.getEid())
-            .ltIfPresent(ScoreDO::getScore, lianghaoScore)
-            .geIfPresent(ScoreDO::getScore, jiGeScore)
-        );
+        return this.selectCount(this.getJiGeWrapper(lianghaoScore, jiGeScore, reqVO.getCid(), reqVO.getEid()));
     }
 
+    // 不及格学生数量
     default Long selectBuJiGeCount(float jigeScore, ScoreAllCoursePieReqVO reqVO) {
         // 不及格数量<及格
-        return this.selectCount(new LambdaQueryWrapperX<ScoreDO>()
-            .eq(ScoreDO::getCourseId, reqVO.getCid())
-            .eq(ScoreDO::getExamId, reqVO.getEid())
-            .ltIfPresent(ScoreDO::getScore, jigeScore)
-        );
+        return this.selectCount(this.getBuJiGeWrapper(jigeScore, reqVO.getCid(), reqVO.getEid()));
     }
+
+    // 获取优秀学生列表
+    default List<ScoreAllDetailTipRespVo> selectYouXiuStudentList(Float youxiuScore, ScoreAllDetailTipReqVO reqVO) {
+        LambdaQueryWrapperX<ScoreDO> wrapperX = this.getYouXiuWrapper(youxiuScore, reqVO.getCid(), reqVO.getEid());
+        return this.selectStudentListByXml(wrapperX);
+    }
+
+    // 获取良好学生列表
+    default List<ScoreAllDetailTipRespVo> selectLiangHaoStudentList(Float youxiuScore, Float lianghaoScore, ScoreAllDetailTipReqVO reqVO) {
+        return this.selectStudentListByXml(this.getLiangHaoWrapper(youxiuScore, lianghaoScore, reqVO.getCid(), reqVO.getEid()));
+    }
+
+    // 获取及格学生列表
+    default List<ScoreAllDetailTipRespVo> selectJiGeStudentList(Float lianghaoScore, Float jiGeScore, ScoreAllDetailTipReqVO reqVO) {
+        return this.selectStudentListByXml(this.getJiGeWrapper(lianghaoScore, jiGeScore, reqVO.getCid(), reqVO.getEid()));
+    }
+
+    // 获取不及格学生列表
+    default List<ScoreAllDetailTipRespVo> selectBuJiGeStudentList(Float jiGeScore, ScoreAllDetailTipReqVO reqVO) {
+        return this.selectStudentListByXml(this.getBuJiGeWrapper(jiGeScore, reqVO.getCid(), reqVO.getEid()));
+    }
+
+    List<ScoreAllDetailTipRespVo> selectMaxScoreStudentList(ScoreAllDetailTipReqVO reqVO);
+
+    List<ScoreAllDetailTipRespVo> selectMinScoreStudentList(ScoreAllDetailTipReqVO reqVO);
 }

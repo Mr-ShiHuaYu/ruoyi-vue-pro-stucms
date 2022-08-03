@@ -28,6 +28,11 @@ export default {
       required: true
     },
     column: {
+      // 每一列的数据,其中部分数据如下,property为每一列的字段名
+      /*
+      * label: "优秀"
+        property: "youxiu"
+      * */
       type: Object,
       required: true
     },
@@ -45,10 +50,10 @@ export default {
   methods: {
     handleShowDetail(row, column) {
       row.content = ""
+      // property为点击这一列的字段名,如 youxiu
       const formData = {
         cid: row.cid, eid: row.eid, field: column.property
       }
-      // console.log(formData);
       showTip(formData).then(response => {
           let tip = '';
           response.data.forEach(function (item) {

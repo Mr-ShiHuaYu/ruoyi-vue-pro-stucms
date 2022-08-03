@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.stucms.controller.admin.score;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllChartPieRespVo;
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllCoursePieReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllRespVo;
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreSearchAllReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.*;
 import cn.iocoder.yudao.module.stucms.service.score.ScoreAllService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,6 +42,14 @@ public class ScoreAllController {
     @PreAuthorize("@ss.hasPermission('stucms:score:all:query')")
     public CommonResult<List<ScoreAllChartPieRespVo>> showCoursePie(@Valid ScoreAllCoursePieReqVO reqVO) {
         List<ScoreAllChartPieRespVo> list = this.scoreAllService.getCoursePieData(reqVO);
+        return success(list);
+    }
+
+    @GetMapping("/showDetailTips")
+    @ApiOperation("显示总体分析的某个单位格的具体名单")
+    @PreAuthorize("@ss.hasPermission('stucms:score:all:query')")
+    public CommonResult<List<ScoreAllDetailTipRespVo>> showDetailTips(@Valid ScoreAllDetailTipReqVO reqVO) {
+        List<ScoreAllDetailTipRespVo> list = this.scoreAllService.getDetailTips(reqVO);
         return success(list);
     }
 }

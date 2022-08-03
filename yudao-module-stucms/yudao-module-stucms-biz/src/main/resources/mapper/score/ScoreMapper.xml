@@ -103,5 +103,42 @@
         ORDER BY
             cid
     </select>
+    <select id="selectStudentListByXml"
+            resultType="cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllDetailTipRespVo">
+        SELECT u.student_name as name, sc.score as score
+        FROM stucms_score sc
+                 INNER JOIN stucms_student u ON u.student_id = sc.student_id
+            ${ew.customSqlSegment}
+    </select>
 
+    <select id="selectMaxScoreStudentList"
+            resultType="cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllDetailTipRespVo">
+        SELECT u.student_name as name,
+               s.score        as score
+        FROM (SELECT exam_id, course_id, max(score) max
+              FROM stucms_score sc
+              WHERE exam_id = #{eid}
+                AND course_id = #{cid}) t,
+             stucms_score s,
+             stucms_student u
+        WHERE t.max = s.score
+          AND t.exam_id = s.exam_id
+          AND t.course_id = s.course_id
+          AND u.student_id = s.student_id
+    </select>
+
+    <select id="selectMinScoreStudentList"
+            resultType="cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.ScoreAllDetailTipRespVo">
+        SELECT u.student_name as name,
+               s.score        as score
+        FROM (SELECT exam_id, course_id, min(score) min
+              FROM stucms_score sc
+              WHERE exam_id = #{eid} AND course_id = #{cid}) t,
+             stucms_score s,
+             stucms_student u
+        WHERE t.min = s.score
+          AND t.exam_id = s.exam_id
+          AND t.course_id = s.course_id
+          AND u.student_id = s.student_id
+    </select>
 </mapper>

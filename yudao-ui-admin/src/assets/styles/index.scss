@@ -189,3 +189,34 @@ aside {
 .multiselect--active {
   z-index: 1000 !important;
 }
+
+
+// 华自定义的全局样式 开始
+.two-col-dialog {
+  .el-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    .el-form-item:not(.el-textarea) {
+      width: 46%;
+    }
+  }
+
+  .dialog-footer {
+    text-align: center;
+  }
+}
+
+.el-popover.el-popper.table-score-all.show-tip {
+  background-color: $green;
+  color: #FFFFFF;
+  font-size: 12px;
+  padding: 10px;
+
+  .popper__arrow::after {
+    border-right-color: $green;
+  }
+}
+
+// 华自定义的全局样式 结束
