@@ -117,7 +117,6 @@ public class CourseServiceImpl implements CourseService {
         return this.courseMapper.selectCourseFullById(cid);
     }
 
-
     private void checkCreateOrUpdate(Long id, String courseName) {
         this.checkCourseNameUnique(id, courseName);
     }

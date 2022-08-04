@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.stucms.convert.student;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.StudentCreateReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.StudentExcelVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.StudentRespVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.StudentUpdateReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.*;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.student.StudentDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -33,4 +30,5 @@ public interface StudentConvert {
 
     List<StudentExcelVO> convertList02(List<StudentDO> list);
 
+    PageResult<StudentSimpleRespVO> convertSimplePage(PageResult<StudentDO> list);
 }

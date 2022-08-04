@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.QueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.util.MyBatisUtils;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.*;
+import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.personal.Chart1SeriesRespVO;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchExportReqVO;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchPageReqVO;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchRespVO;
@@ -174,4 +175,13 @@ public interface ScoreMapper extends BaseMapperX<ScoreDO> {
     List<ScoreAllDetailTipRespVo> selectMaxScoreStudentList(ScoreAllDetailTipReqVO reqVO);
 
     List<ScoreAllDetailTipRespVo> selectMinScoreStudentList(ScoreAllDetailTipReqVO reqVO);
+
+    // 获取个人分析-图表1的数据
+    default List<Chart1SeriesRespVO> getChart1SeriesById(Long studentId) {
+        QueryWrapperX<ScoreDO> wrapperX = new QueryWrapperX<ScoreDO>()
+            .eqIfPresent("t.sid", studentId);
+        return this.getChart1SeriesByXml(wrapperX);
+    }
+
+    List<Chart1SeriesRespVO> getChart1SeriesByXml(@Param("ew") Wrapper<ScoreDO> wrapperX);
 }

@@ -19,7 +19,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -38,14 +37,14 @@ public class StudentController {
     @ApiOperation("创建学生管理")
     @PreAuthorize("@ss.hasPermission('stucms:student:create')")
     public CommonResult<Long> createStudent(@Valid @RequestBody StudentCreateReqVO createReqVO) {
-        return success(studentService.createStudent(createReqVO));
+        return success(this.studentService.createStudent(createReqVO));
     }
 
     @PutMapping("/update")
     @ApiOperation("更新学生管理")
     @PreAuthorize("@ss.hasPermission('stucms:student:update')")
     public CommonResult<Boolean> updateStudent(@Valid @RequestBody StudentUpdateReqVO updateReqVO) {
-        studentService.updateStudent(updateReqVO);
+        this.studentService.updateStudent(updateReqVO);
         return success(true);
     }
 
@@ -54,7 +53,7 @@ public class StudentController {
     @ApiImplicitParam(name = "id", value = "编号", required = true, dataTypeClass = Long.class)
     @PreAuthorize("@ss.hasPermission('stucms:student:delete')")
     public CommonResult<Boolean> deleteStudent(@RequestParam("id") Long id) {
-        studentService.deleteStudent(id);
+        this.studentService.deleteStudent(id);
         return success(true);
     }
 
@@ -63,24 +62,23 @@ public class StudentController {
     @ApiImplicitParam(name = "id", value = "编号", required = true, example = "1024", dataTypeClass = Long.class)
     @PreAuthorize("@ss.hasPermission('stucms:student:query')")
     public CommonResult<StudentRespVO> getStudent(@RequestParam("id") Long id) {
-        StudentDO student = studentService.getStudent(id);
+        StudentDO student = this.studentService.getStudent(id);
         return success(StudentConvert.INSTANCE.convert(student));
     }
 
-    @GetMapping("/list")
-    @ApiOperation("获得学生管理列表")
-    @ApiImplicitParam(name = "ids", value = "编号列表", required = true, example = "1024,2048", dataTypeClass = List.class)
+    @GetMapping("/simple-page")
+    @ApiOperation("获得简单学生分页列表")
     @PreAuthorize("@ss.hasPermission('stucms:student:query')")
-    public CommonResult<List<StudentRespVO>> getStudentList(@RequestParam("ids") Collection<Long> ids) {
-        List<StudentDO> list = studentService.getStudentList(ids);
-        return success(StudentConvert.INSTANCE.convertList(list));
+    public CommonResult<PageResult<StudentSimpleRespVO>> getStudentSimplePage(@Valid StudentSimplePageReqVO pageVO) {
+        PageResult<StudentDO> list = this.studentService.getStudentSimplePage(pageVO);
+        return success(StudentConvert.INSTANCE.convertSimplePage(list));
     }
 
     @GetMapping("/page")
     @ApiOperation("获得学生管理分页")
     @PreAuthorize("@ss.hasPermission('stucms:student:query')")
     public CommonResult<PageResult<StudentRespVO>> getStudentPage(@Valid StudentPageReqVO pageVO) {
-        PageResult<StudentDO> pageResult = studentService.getStudentPage(pageVO);
+        PageResult<StudentDO> pageResult = this.studentService.getStudentPage(pageVO);
         return success(StudentConvert.INSTANCE.convertPage(pageResult));
     }
 
@@ -89,8 +87,8 @@ public class StudentController {
     @PreAuthorize("@ss.hasPermission('stucms:student:export')")
     @OperateLog(type = EXPORT)
     public void exportStudentExcel(@Valid StudentExportReqVO exportReqVO,
-              HttpServletResponse response) throws IOException {
-        List<StudentDO> list = studentService.getStudentList(exportReqVO);
+                                   HttpServletResponse response) throws IOException {
+        List<StudentDO> list = this.studentService.getStudentList(exportReqVO);
         // 导出 Excel
         List<StudentExcelVO> datas = StudentConvert.INSTANCE.convertList02(list);
         ExcelUtils.write(response, "学生管理.xls", "数据", StudentExcelVO.class, datas);

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.stucms.controller.admin.exam;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
 import cn.iocoder.yudao.module.stucms.controller.admin.exam.vo.*;
@@ -74,6 +75,15 @@ public class ExamController {
         List<ExamSimpleVO> examList = this.examService.getSimpleExamList();
 
         return success(examList);
+    }
+
+    @GetMapping("/name-list")
+    @ApiOperation("获得考试名称列表")
+    @PreAuthorize("@ss.hasPermission('stucms:exam:query')")
+    public CommonResult<List<String>> getExamNameList() {
+        List<ExamSimpleVO> examList = this.examService.getSimpleExamList();
+        List<String> nameList = CollectionUtils.convertList(examList, ExamSimpleVO::getExamName);
+        return success(nameList);
     }
 
     @GetMapping("/page")

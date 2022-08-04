@@ -43,6 +43,14 @@ export function getCoursePage(query) {
   })
 }
 
+// 获得课程分页
+export function getCourseNameList() {
+  return request({
+    url: '/stucms/course/name-list',
+    method: 'get'
+  })
+}
+
 // 导出课程 Excel
 export function exportCourseExcel(query) {
   return request({

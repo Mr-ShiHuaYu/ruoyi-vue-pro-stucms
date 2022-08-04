@@ -43,11 +43,17 @@ export function getExamPage(query) {
   })
 }
 
-export function getExamList(query) {
+export function getExamList() {
   return request({
     url: '/stucms/exam/list',
-    method: 'get',
-    params: query
+    method: 'get'
+  })
+}
+
+export function getExamNameList() {
+  return request({
+    url: '/stucms/exam/name-list',
+    method: 'get'
   })
 }
 

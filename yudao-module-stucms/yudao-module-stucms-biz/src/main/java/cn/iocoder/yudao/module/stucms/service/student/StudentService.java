@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.stucms.service.student;
 
-import java.util.*;
-import javax.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.*;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.student.StudentDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * 学生管理 Service 接口
@@ -44,14 +45,6 @@ public interface StudentService {
     StudentDO getStudent(Long id);
 
     /**
-     * 获得学生管理列表
-     *
-     * @param ids 编号
-     * @return 学生管理列表
-     */
-    List<StudentDO> getStudentList(Collection<Long> ids);
-
-    /**
      * 获得学生管理分页
      *
      * @param pageReqVO 分页查询
@@ -67,4 +60,5 @@ public interface StudentService {
      */
     List<StudentDO> getStudentList(StudentExportReqVO exportReqVO);
 
+    PageResult<StudentDO> getStudentSimplePage(StudentSimplePageReqVO reqVO);
 }

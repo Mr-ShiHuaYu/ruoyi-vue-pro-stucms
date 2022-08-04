@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.stucms.controller.admin.course;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
 import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.*;
@@ -40,6 +41,8 @@ public class CourseController {
 
     @Resource
     private CourseService courseService;
+    @Resource
+    private TeacherService teacherService;
 
     @PostMapping("/create")
     @ApiOperation("创建课程")
@@ -74,17 +77,14 @@ public class CourseController {
         return success(CourseConvert.INSTANCE.convert(course));
     }
 
-    @GetMapping("/list")
+    @GetMapping("/name-list")
     @ApiOperation("获得课程列表")
-    @ApiImplicitParam(name = "ids", value = "编号列表", required = true, example = "1024,2048", dataTypeClass = List.class)
     @PreAuthorize("@ss.hasPermission('stucms:course:query')")
-    public CommonResult<List<CourseRespVO>> getCourseList(@RequestParam("ids") Collection<Long> ids) {
-        List<CourseDO> list = this.courseService.getCourseList(ids);
-        return success(CourseConvert.INSTANCE.convertList(list));
+    public CommonResult<List<String>> getCourseNameList() {
+        List<CourseDO> list = this.courseService.getCourseList();
+        List<String> courseNames = CollectionUtils.convertList(list, CourseDO::getCourseName);
+        return success(courseNames);
     }
-
-    @Resource
-    private TeacherService teacherService;
 
     @GetMapping("/page")
     @ApiOperation("获得课程分页")

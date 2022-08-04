@@ -2,8 +2,8 @@ package cn.iocoder.yudao.module.stucms.convert.course;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.stucms.controller.admin.course.vo.*;
-import cn.iocoder.yudao.module.stucms.dal.dataobject.teacher.TeacherDO;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.course.CourseDO;
+import cn.iocoder.yudao.module.stucms.dal.dataobject.teacher.TeacherDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

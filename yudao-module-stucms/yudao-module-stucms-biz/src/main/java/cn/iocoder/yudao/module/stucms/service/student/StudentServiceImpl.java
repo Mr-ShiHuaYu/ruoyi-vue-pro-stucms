@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.stucms.service.student;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.StudentCreateReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.StudentExportReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.StudentPageReqVO;
-import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.StudentUpdateReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.*;
 import cn.iocoder.yudao.module.stucms.convert.student.StudentConvert;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.student.StudentDO;
 import cn.iocoder.yudao.module.stucms.dal.mysql.student.StudentMapper;
@@ -12,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
-import java.util.Collection;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -34,7 +30,7 @@ public class StudentServiceImpl implements StudentService {
     public Long createStudent(StudentCreateReqVO createReqVO) {
         // 插入
         StudentDO student = StudentConvert.INSTANCE.convert(createReqVO);
-        studentMapper.insert(student);
+        this.studentMapper.insert(student);
         // 返回
         return student.getId();
     }
@@ -45,7 +41,7 @@ public class StudentServiceImpl implements StudentService {
         this.validateStudentExists(updateReqVO.getId());
         // 更新
         StudentDO updateObj = StudentConvert.INSTANCE.convert(updateReqVO);
-        studentMapper.updateById(updateObj);
+        this.studentMapper.updateById(updateObj);
     }
 
     @Override
@@ -53,33 +49,33 @@ public class StudentServiceImpl implements StudentService {
         // 校验存在
         this.validateStudentExists(id);
         // 删除
-        studentMapper.deleteById(id);
+        this.studentMapper.deleteById(id);
     }
 
     private void validateStudentExists(Long id) {
-        if (studentMapper.selectById(id) == null) {
+        if (this.studentMapper.selectById(id) == null) {
             throw exception(STUDENT_NOT_EXISTS);
         }
     }
 
     @Override
     public StudentDO getStudent(Long id) {
-        return studentMapper.selectById(id);
-    }
-
-    @Override
-    public List<StudentDO> getStudentList(Collection<Long> ids) {
-        return studentMapper.selectBatchIds(ids);
+        return this.studentMapper.selectById(id);
     }
 
     @Override
     public PageResult<StudentDO> getStudentPage(StudentPageReqVO pageReqVO) {
-        return studentMapper.selectPage(pageReqVO);
+        return this.studentMapper.selectPage(pageReqVO);
     }
 
     @Override
     public List<StudentDO> getStudentList(StudentExportReqVO exportReqVO) {
-        return studentMapper.selectList(exportReqVO);
+        return this.studentMapper.selectList(exportReqVO);
+    }
+
+    @Override
+    public PageResult<StudentDO> getStudentSimplePage(StudentSimplePageReqVO reqVO) {
+        return this.studentMapper.selectSimplePage(reqVO);
     }
 
 }

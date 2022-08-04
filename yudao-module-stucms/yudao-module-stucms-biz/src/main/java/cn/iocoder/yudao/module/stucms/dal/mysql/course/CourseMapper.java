@@ -49,5 +49,4 @@ public interface CourseMapper extends BaseMapperX<CourseDO> {
         }
         return courseDO.getCourseFull();
     }
-
 }

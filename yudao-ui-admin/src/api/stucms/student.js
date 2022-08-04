@@ -34,6 +34,17 @@ export function getStudent(id) {
   })
 }
 
+
+// 获取简单学生列表
+export function getSimpleStudentList(query) {
+  return request({
+    url: '/stucms/student/simple-page',
+    method: 'get',
+    params: query
+  })
+}
+
+
 // 获得学生管理分页
 export function getStudentPage(query) {
   return request({

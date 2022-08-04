@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.StudentExportReqVO;
 import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.StudentPageReqVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.StudentSimplePageReqVO;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.student.StudentDO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -27,6 +28,12 @@ public interface StudentMapper extends BaseMapperX<StudentDO> {
             .likeIfPresent(StudentDO::getSysid, reqVO.getSysid())
             .eqIfPresent(StudentDO::getJishu, reqVO.getJishu())
             .eqIfPresent(StudentDO::getLiushou, reqVO.getLiushou()));
+    }
+
+    default PageResult<StudentDO> selectSimplePage(StudentSimplePageReqVO reqVO) {
+        return this.selectPage(reqVO, new LambdaQueryWrapperX<StudentDO>()
+            .likeIfPresent(StudentDO::getStudentUid, reqVO.getStudentUid())
+            .likeIfPresent(StudentDO::getStudentName, reqVO.getStudentName()));
     }
 
     default List<StudentDO> selectList(StudentExportReqVO reqVO) {
