@@ -65,7 +65,7 @@
           <dict-tag :type="DICT_TYPE.SYSTEM_USER_SEX" :value="scope.row.sex"/>
         </template>
       </el-table-column>
-      <el-table-column label="身份证号" align="center" prop="sysid"/>
+      <el-table-column label="身份证号" align="center" prop="sysid" min-width="100"/>
       <el-table-column label="手机" align="center" prop="phone"/>
       <el-table-column label="出生日期" align="center" prop="birth"/>
       <el-table-column label="民族" align="center" prop="minzu"/>

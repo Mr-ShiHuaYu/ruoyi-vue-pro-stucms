@@ -1,14 +1,11 @@
 package cn.iocoder.yudao.module.stucms.service.score;
 
-import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.personal.Chart1SeriesRespVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.personal.*;
 import cn.iocoder.yudao.module.stucms.dal.mysql.score.ScoreMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ScorePersonalServiceImpl implements ScorePersonalService {
@@ -34,5 +31,32 @@ public class ScorePersonalServiceImpl implements ScorePersonalService {
             // chart1SeriesVo.setScores(null);
         }
         return chart1SeriesList;
+    }
+
+    @Override
+    public List<Chart2SeriesRespVO> getChart2SeriesBySid(Long studentId) {
+        List<Chart2SeriesRespVO> seriesRespVOList = this.scoreMapper.getChart2SeriesBySid(studentId);
+        for (Chart2SeriesRespVO chart2SeriesVo : seriesRespVOList) {
+            String[] ranks = chart2SeriesVo.getRanks().split(",");
+            chart2SeriesVo.setData(Arrays.asList(ranks));
+        }
+        return seriesRespVOList;
+    }
+
+    @Override
+    public Chart3SeriesRespVO getChart3SeriesBySid(Long studentId) {
+        List<Chart3DataVo> chart3DataList = this.scoreMapper.getChart3DataBySid(studentId);
+        Chart3SeriesRespVO respVO = new Chart3SeriesRespVO();
+        respVO.setData(chart3DataList);
+        return respVO;
+    }
+
+    @Override
+    public Chart4SeriesRespVO getChart4SeriesBySid(Long studentId) {
+        // 获取图表数据,每次考试的总分排名列表
+        List<Chart4DataVo> rankList = this.scoreMapper.getChart4DataBySid(studentId);
+        Chart4SeriesRespVO respVO = new Chart4SeriesRespVO();
+        respVO.setData(rankList);
+        return respVO;
     }
 }

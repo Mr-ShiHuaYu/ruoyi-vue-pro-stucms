@@ -5,15 +5,14 @@
     </div>
     <div ref="chart3" :style="{height:height,width:width}"/>
   </el-card>
-
 </template>
 
 <script>
 import echarts from 'echarts'
-
-require('echarts/theme/macarons') // echarts theme
 import resize from '@/views/dashboard/mixins/resize'
 import {getPersonalScoreChart4} from "@/api/stucms/score/personal";
+
+require('echarts/theme/macarons') // echarts theme
 
 export default {
   mixins: [resize],
@@ -34,6 +33,10 @@ export default {
       type: Number,
       required: true
     },
+    studentName: {
+      type: String,
+      required: true
+    },
     exams: {
       type: Array,
       required: true
@@ -47,10 +50,13 @@ export default {
     return {
       loading: false,
       chart: null,
-      studentName: "",
       options: {
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          formatter: function (params) {
+            const d = params[0];
+            return `${params[0].axisValueLabel}<br>${d.marker}排名:第${d.data.value}名<br>${d.marker}总分:${d.data.sumScore}`;
+          }
         },
         legend: {
           selectedMode: 'single',
@@ -113,20 +119,18 @@ export default {
       if (!studentId) return
       this.loading = true
       getPersonalScoreChart4(studentId).then(response => {
-        let data = response.data;
-        // 设置学生姓名
-        this.studentName = data.studentName
         // 设置图例,就是课程名称,语文,数学等
         this.options.legend.data = this.courses;
         // 设置图横坐标
         this.options.xAxis.data = this.exams;
         // 设置数据
-        this.options.series = data.series;
+        this.options.series = response.data;
         this.chart.setOption(this.options)
         this.loading = false
       })
-          .catch(() => {
-          })
+        .catch((err) => {
+          console.log(err);
+        })
     }
   }
 }

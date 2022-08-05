@@ -196,4 +196,156 @@
             eid
 
     </select>
+
+    <select id="getChart2SeriesByXml"
+            resultType="cn.iocoder.yudao.module.stucms.controller.admin.score.vo.personal.Chart2SeriesRespVO">
+        SELECT t.name,
+               group_concat(rank ORDER BY eid) ranks
+        FROM (
+                 SELECT a.*,
+                        IF
+                            (
+                                @cid = cid,
+                                IF
+                                    (@sco = score, @rank, @rank := @rank + 1),
+                                @rank := 1
+                            ) AS rank,
+		@sco := score,
+		@cid := cid
+                 FROM
+                     (
+                     SELECT
+                     u.student_id sid,
+                     c.course_name NAME,
+                     c.course_id cid,
+                     e.exam_id eid,
+                     score
+                     FROM
+                     stucms_score sc,
+                     stucms_student u,
+                     stucms_course c,
+                     stucms_exam e
+                     WHERE
+                     u.student_id = sc.student_id
+                     AND c.course_id = sc.course_id
+                     AND e.exam_id = sc.exam_id
+                     ORDER BY
+                     e.exam_id,
+                     c.course_id,
+                     score DESC
+                     ) a, (
+                     SELECT
+                     @cid := NULL,
+                     @sco := NULL,
+                     @rank := 0
+                     ) b
+             ) t
+            ${ew.customSqlSegment}
+
+        GROUP BY
+            cid
+        ORDER BY
+            cid,
+            eid
+    </select>
+
+    <select id="getChart3DataByXml"
+            resultType="cn.iocoder.yudao.module.stucms.controller.admin.score.vo.personal.Chart3DataVo">
+        SELECT
+               t.sum_score `value`,
+               t.rank
+        FROM (
+                 SELECT a.*,
+                        IF
+                            (
+                                @eid = eid,
+                                IF
+                                    (@sco = sum_score, @rank, @rank := @rank + 1),
+                                @rank := 1
+                            ) AS rank,
+		@sco := sum_score,
+		@eid := eid
+                 FROM
+                     (
+                     SELECT
+                     u.student_id sid,
+                     u.student_name name,
+                     e.exam_id eid,
+                     e.exam_name exam,
+                     sum( score ) sum_score
+                     FROM
+                     stucms_score sc,
+                     stucms_student u,
+                     stucms_course c,
+                     stucms_exam e
+                     WHERE
+                     u.student_id = sc.student_id
+                     AND c.course_id = sc.course_id
+                     AND e.exam_id = sc.exam_id
+                     GROUP BY
+                     sid,
+                     eid
+                     ORDER BY
+                     eid,
+                     sum_score DESC
+                     ) a, (
+                     SELECT
+                     @eid := NULL,
+                     @sco := NULL,
+                     @rank := 0
+                     ) b
+             ) t
+            ${ew.customSqlSegment}
+
+        ORDER BY
+            eid
+    </select>
+
+    <select id="getChart4DataByXml" resultType="cn.iocoder.yudao.module.stucms.controller.admin.score.vo.personal.Chart4DataVo">
+        SELECT
+            t.sum_score,
+            t.rank as `value`
+        FROM
+            (
+                SELECT
+                    a.*,
+                    IF
+                        (
+                            @eid = eid,
+                            IF
+                                ( @sco = sum_score, @rank, @rank := @rank + 1 ),
+                            @rank := 1
+                        ) as rank,
+		@sco := sum_score,
+		@eid := eid
+                FROM
+                    (
+                    SELECT
+                    u.student_id sid,
+                    u.student_name NAME,
+                    e.exam_id eid,
+                    sum( score ) sum_score
+                    FROM
+                    stucms_score sc,
+                    stucms_student u,
+                    stucms_course c,
+                    stucms_exam e
+                    WHERE
+                    u.student_id = sc.student_id
+                    AND c.course_id = sc.course_id
+                    AND e.exam_id = sc.exam_id
+                    GROUP BY
+                    sid,
+                    eid
+                    ORDER BY
+                    eid,
+                    sum_score DESC
+                    ) a,
+                    ( SELECT @eid := NULL, @sco := NULL, @rank := 0 ) b
+            ) t
+            ${ew.customSqlSegment}
+
+        ORDER BY
+            eid
+    </select>
 </mapper>

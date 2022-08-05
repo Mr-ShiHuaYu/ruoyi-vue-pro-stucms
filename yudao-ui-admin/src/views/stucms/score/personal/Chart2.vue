@@ -10,10 +10,10 @@
 
 <script>
 import echarts from 'echarts'
-
-require('echarts/theme/macarons') // echarts theme
 import resize from '@/views/dashboard/mixins/resize'
 import {getPersonalScoreChart2} from "@/api/stucms/score/personal";
+
+require('echarts/theme/macarons') // echarts theme
 
 export default {
   mixins: [resize],
@@ -34,6 +34,10 @@ export default {
       type: Number,
       required: true
     },
+    studentName: {
+      type: String,
+      required: true
+    },
     exams: {
       type: Array,
       required: true
@@ -47,7 +51,6 @@ export default {
     return {
       loading: false,
       chart: null,
-      studentName: "",
       options: {
         tooltip: {
           trigger: 'axis'
@@ -114,15 +117,12 @@ export default {
       if (!studentId) return
       this.loading = true
       getPersonalScoreChart2(studentId).then(response => {
-        let data = response.data;
-        // 设置学生姓名
-        this.studentName = data.studentName
         // 设置图例,就是课程名称,语文,数学等
         this.options.legend.data = this.courses;
         // 设置图横坐标
         this.options.xAxis.data = this.exams;
         // 设置数据
-        this.options.series = data.series;
+        this.options.series = response.data;
         this.chart.setOption(this.options)
         this.loading = false
       })

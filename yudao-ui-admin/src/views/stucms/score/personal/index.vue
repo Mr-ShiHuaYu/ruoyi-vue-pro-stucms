@@ -59,26 +59,32 @@
             />
           </el-col>
 
-          <!--<el-col :span="12">-->
-          <!--  <chart2-->
-          <!--    :exams="examList"-->
-          <!--    :courses="courseList"-->
-          <!--    :student-id="studentId"/>-->
-          <!--</el-col>-->
+          <el-col :span="12">
+            <chart2
+              :exams="examList"
+              :courses="courseList"
+              :student-id="studentId"
+              :student-name="studentName"
+            />
+          </el-col>
 
-          <!--<el-col :span="12">-->
-          <!--  <chart3-->
-          <!--    :exams="examList"-->
-          <!--    :courses="courseList"-->
-          <!--    :student-id="studentId"/>-->
-          <!--</el-col>-->
+          <el-col :span="12">
+            <chart3
+              :exams="examList"
+              :courses="courseList"
+              :student-id="studentId"
+              :student-name="studentName"
+            />
+          </el-col>
 
-          <!--<el-col :span="12">-->
-          <!--  <chart4-->
-          <!--    :exams="examList"-->
-          <!--    :courses="courseList"-->
-          <!--    :student-id="studentId"/>-->
-          <!--</el-col>-->
+          <el-col :span="12">
+            <chart4
+              :exams="examList"
+              :courses="courseList"
+              :student-id="studentId"
+              :student-name="studentName"
+            />
+          </el-col>
 
         </el-row>
 

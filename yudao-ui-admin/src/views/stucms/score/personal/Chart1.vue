@@ -56,7 +56,7 @@ export default {
           trigger: 'axis',
           formatter: function (params) {
             const d = params[0];
-            return params[0].name + '<br>' + d.marker + '成绩:' + d.data.value + '<br>' + d.marker + '排名:' + d.data.rank
+            return `${params[0].name}<br>${d.marker}成绩:${d.data.value}<br>${d.marker}排名:${d.data.rank}`;
           }
         },
         legend: {

@@ -7,6 +7,9 @@ import cn.iocoder.yudao.framework.mybatis.core.query.QueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.util.MyBatisUtils;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.all.*;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.personal.Chart1SeriesRespVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.personal.Chart2SeriesRespVO;
+import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.personal.Chart3DataVo;
+import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.personal.Chart4DataVo;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchExportReqVO;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchPageReqVO;
 import cn.iocoder.yudao.module.stucms.controller.admin.score.vo.search.ScoreSearchRespVO;
@@ -178,10 +181,34 @@ public interface ScoreMapper extends BaseMapperX<ScoreDO> {
 
     // 获取个人分析-图表1的数据
     default List<Chart1SeriesRespVO> getChart1SeriesById(Long studentId) {
-        QueryWrapperX<ScoreDO> wrapperX = new QueryWrapperX<ScoreDO>()
+        return this.getChart1SeriesByXml(this.getChartWrapper(studentId));
+    }
+
+    default QueryWrapperX<ScoreDO> getChartWrapper(Long studentId) {
+        return new QueryWrapperX<ScoreDO>()
             .eqIfPresent("t.sid", studentId);
-        return this.getChart1SeriesByXml(wrapperX);
     }
 
     List<Chart1SeriesRespVO> getChart1SeriesByXml(@Param("ew") Wrapper<ScoreDO> wrapperX);
+
+    // 获取各科排名折线图-图表2的数据
+    default List<Chart2SeriesRespVO> getChart2SeriesBySid(Long studentId) {
+        return this.getChart2SeriesByXml(this.getChartWrapper(studentId));
+    }
+
+    List<Chart2SeriesRespVO> getChart2SeriesByXml(@Param("ew") Wrapper<ScoreDO> chartWrapper);
+
+    // 获取总分折线图-图表3的数据
+    default List<Chart3DataVo> getChart3DataBySid(Long studentId) {
+        return this.getChart3DataByXml(this.getChartWrapper(studentId));
+    }
+
+    List<Chart3DataVo> getChart3DataByXml(@Param("ew") Wrapper<ScoreDO> chartWrapper);
+
+    default List<Chart4DataVo> getChart4DataBySid(Long studentId) {
+        return this.getChart4DataByXml(this.getChartWrapper(studentId));
+    }
+
+    List<Chart4DataVo> getChart4DataByXml(@Param("ew") Wrapper<ScoreDO> wrapper);
+
 }
