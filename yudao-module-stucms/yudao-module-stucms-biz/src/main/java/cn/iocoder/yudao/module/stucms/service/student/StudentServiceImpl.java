@@ -5,6 +5,7 @@ import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.*;
 import cn.iocoder.yudao.module.stucms.convert.student.StudentConvert;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.student.StudentDO;
 import cn.iocoder.yudao.module.stucms.dal.mysql.student.StudentMapper;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -25,6 +26,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Resource
     private StudentMapper studentMapper;
+    @Resource
+    private AdminUserApi adminUserApi;
 
     @Override
     public Long createStudent(StudentCreateReqVO createReqVO) {
@@ -65,7 +68,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public PageResult<StudentDO> getStudentPage(StudentPageReqVO pageReqVO) {
-        return this.studentMapper.selectPage(pageReqVO);
+        return this.studentMapper.selectPage(pageReqVO, this.adminUserApi.getDeptCondition(pageReqVO.getDeptId()));
     }
 
     @Override
@@ -76,6 +79,11 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public PageResult<StudentDO> getStudentSimplePage(StudentSimplePageReqVO reqVO) {
         return this.studentMapper.selectSimplePage(reqVO);
+    }
+
+    @Override
+    public StudentDO getStudentByUid(String username) {
+        return this.studentMapper.selectOneByUid(username);
     }
 
 }

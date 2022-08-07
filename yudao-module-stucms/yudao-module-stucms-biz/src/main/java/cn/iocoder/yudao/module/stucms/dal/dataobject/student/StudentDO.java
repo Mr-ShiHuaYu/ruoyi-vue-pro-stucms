@@ -26,11 +26,17 @@ import java.util.Date;
 @AllArgsConstructor
 public class StudentDO extends BaseDO {
 
+    private static final long serialVersionUID = 612895446097884353L;
     /**
      * 主键
      */
     @TableId("student_id")
     private Long id;
+
+    /**
+     * 班级ID
+     */
+    private Long deptId;
     /**
      * 学号
      */

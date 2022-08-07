@@ -1,103 +1,121 @@
 <template>
   <div class="app-container">
 
-    <!-- 搜索工作栏 -->
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="学号" prop="studentUid">
-        <el-input v-model="queryParams.studentUid" placeholder="请输入学号" clearable @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item label="姓名" prop="studentName">
-        <el-input v-model="queryParams.studentName" placeholder="请输入姓名" clearable @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item label="性别" prop="sex">
-        <el-select v-model="queryParams.sex" placeholder="请选择性别" clearable size="small">
-          <el-option v-for="dict in this.getDictDatas(DICT_TYPE.SYSTEM_USER_SEX)"
-                     :key="dict.value" :label="dict.label" :value="dict.value"/>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="手机" prop="phone">
-        <el-input v-model="queryParams.phone" placeholder="请输入手机" clearable @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item label="身份证号" prop="sysid">
-        <el-input v-model="queryParams.sysid" placeholder="请输入身份证号" clearable @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item label="寄宿" prop="jishu">
-        <el-select v-model="queryParams.jishu" placeholder="请选择寄宿" clearable size="small">
-          <el-option v-for="dict in this.getDictDatas(DICT_TYPE.STUCMS_JISHU_TYPE)"
-                     :key="dict.value" :label="dict.label" :value="dict.value"/>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="留守儿童" prop="liushou">
-        <el-select v-model="queryParams.liushou" placeholder="请选择留守儿童" clearable size="small">
-          <el-option v-for="dict in this.getDictDatas(DICT_TYPE.STUCMS_LIUSHOU_TYPE)"
-                     :key="dict.value" :label="dict.label" :value="dict.value"/>
-        </el-select>
-      </el-form-item>
-
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <!-- 操作工具栏 -->
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                   v-hasPermi="['stucms:student:create']">新增
-        </el-button>
+    <el-row :gutter="20">
+      <!--班级数据-->
+      <el-col :span="4" :xs="24">
+        <div class="head-container">
+          <el-input v-model="deptName" placeholder="请输入班级名称" clearable size="small" prefix-icon="el-icon-search" style="margin-bottom: 20px"/>
+        </div>
+        <div class="head-container">
+          <el-tree :data="deptOptions" :props="defaultProps" :expand-on-click-node="false" :filter-node-method="filterNode"
+                   ref="tree" default-expand-all highlight-current @node-click="handleNodeClick"/>
+        </div>
       </el-col>
-      <el-col :span="1.5">
-        <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
-                   :loading="exportLoading"
-                   v-hasPermi="['stucms:student:export']">导出
-        </el-button>
+
+      <!--右侧学生数据-->
+      <el-col :span="20" :xs="24">
+        <!-- 搜索工作栏 -->
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+          <el-form-item label="学号" prop="studentUid">
+            <el-input v-model="queryParams.studentUid" placeholder="请输入学号" clearable @keyup.enter.native="handleQuery"/>
+          </el-form-item>
+          <el-form-item label="姓名" prop="studentName">
+            <el-input v-model="queryParams.studentName" placeholder="请输入姓名" clearable @keyup.enter.native="handleQuery"/>
+          </el-form-item>
+          <el-form-item label="性别" prop="sex">
+            <el-select v-model="queryParams.sex" placeholder="请选择性别" clearable size="small">
+              <el-option v-for="dict in this.getDictDatas(DICT_TYPE.SYSTEM_USER_SEX)"
+                         :key="dict.value" :label="dict.label" :value="dict.value"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="手机" prop="phone">
+            <el-input v-model="queryParams.phone" placeholder="请输入手机" clearable @keyup.enter.native="handleQuery"/>
+          </el-form-item>
+          <el-form-item label="身份证号" prop="sysid">
+            <el-input v-model="queryParams.sysid" placeholder="请输入身份证号" clearable @keyup.enter.native="handleQuery"/>
+          </el-form-item>
+          <el-form-item label="寄宿" prop="jishu">
+            <el-select v-model="queryParams.jishu" placeholder="请选择寄宿" clearable size="small">
+              <el-option v-for="dict in this.getDictDatas(DICT_TYPE.STUCMS_JISHU_TYPE)"
+                         :key="dict.value" :label="dict.label" :value="dict.value"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="留守儿童" prop="liushou">
+            <el-select v-model="queryParams.liushou" placeholder="请选择留守儿童" clearable size="small">
+              <el-option v-for="dict in this.getDictDatas(DICT_TYPE.STUCMS_LIUSHOU_TYPE)"
+                         :key="dict.value" :label="dict.label" :value="dict.value"/>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-search" @click="handleQuery">搜索</el-button>
+            <el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
+          </el-form-item>
+        </el-form>
+
+        <!-- 操作工具栏 -->
+        <el-row :gutter="10" class="mb8">
+          <el-col :span="1.5">
+            <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+                       v-hasPermi="['stucms:student:create']">新增
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+                       :loading="exportLoading"
+                       v-hasPermi="['stucms:student:export']">导出
+            </el-button>
+          </el-col>
+          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+        </el-row>
+
+        <!-- 列表 -->
+        <el-table v-loading="loading" :data="list">
+          <el-table-column label="姓名" align="center" prop="studentName"/>
+          <el-table-column label="学号" align="center" prop="studentUid"/>
+          <el-table-column label="班级" align="center" key="deptName" prop="dept.name" :show-overflow-tooltip="true" />
+          <el-table-column label="性别" align="center" prop="sex">
+            <template slot-scope="scope">
+              <dict-tag :type="DICT_TYPE.SYSTEM_USER_SEX" :value="scope.row.sex"/>
+            </template>
+          </el-table-column>
+          <el-table-column label="身份证号" align="center" prop="sysid" min-width="100"/>
+          <el-table-column label="手机" align="center" prop="phone"/>
+          <el-table-column label="出生日期" align="center" prop="birth"/>
+          <el-table-column label="民族" align="center" prop="minzu"/>
+          <el-table-column label="寄宿" align="center" prop="jishu">
+            <template slot-scope="scope">
+              <dict-tag :type="DICT_TYPE.STUCMS_JISHU_TYPE" :value="scope.row.jishu"/>
+            </template>
+          </el-table-column>
+          <el-table-column label="留守儿童" align="center" prop="liushou">
+            <template slot-scope="scope">
+              <dict-tag :type="DICT_TYPE.STUCMS_LIUSHOU_TYPE" :value="scope.row.liushou"/>
+            </template>
+          </el-table-column>
+          <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+            <template slot-scope="scope">
+              <span>{{ parseTime(scope.row.createTime) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" min-width="100px" v-if="checkPermi(['stucms:student:update','stucms:student:delete'])">
+            <template slot-scope="scope">
+              <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                         v-hasPermi="['stucms:student:update']">修改
+              </el-button>
+              <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+                         v-hasPermi="['stucms:student:delete']">删除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页组件 -->
+        <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNo" :limit.sync="queryParams.pageSize"
+                    @pagination="getList"/>
+
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-
-    <!-- 列表 -->
-    <el-table v-loading="loading" :data="list">
-      <el-table-column label="学号" align="center" prop="studentUid"/>
-      <el-table-column label="姓名" align="center" prop="studentName"/>
-      <el-table-column label="性别" align="center" prop="sex">
-        <template slot-scope="scope">
-          <dict-tag :type="DICT_TYPE.SYSTEM_USER_SEX" :value="scope.row.sex"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="身份证号" align="center" prop="sysid" min-width="100"/>
-      <el-table-column label="手机" align="center" prop="phone"/>
-      <el-table-column label="出生日期" align="center" prop="birth"/>
-      <el-table-column label="民族" align="center" prop="minzu"/>
-      <el-table-column label="寄宿" align="center" prop="jishu">
-        <template slot-scope="scope">
-          <dict-tag :type="DICT_TYPE.STUCMS_JISHU_TYPE" :value="scope.row.jishu"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="留守儿童" align="center" prop="liushou">
-        <template slot-scope="scope">
-          <dict-tag :type="DICT_TYPE.STUCMS_LIUSHOU_TYPE" :value="scope.row.liushou"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-                     v-hasPermi="['stucms:student:update']">修改
-          </el-button>
-          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-                     v-hasPermi="['stucms:student:delete']">删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页组件 -->
-    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNo" :limit.sync="queryParams.pageSize"
-                @pagination="getList"/>
 
     <!-- 对话框(添加 / 修改) -->
     <el-dialog v-dialog-drag :title="title" :visible.sync="open" width="680px" append-to-body>
@@ -116,6 +134,25 @@
           </el-col>
         </el-row>
 
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="班级" prop="deptId">
+              <!--disable-branch-nodes:禁用分支节点,禁止选择有子节点的节点
+              default-expand-level:默认展开的层级
+              -->
+              <treeselect
+                v-model="form.deptId"
+                :options="deptOptions"
+                :show-count="true"
+                :clearable="false"
+                placeholder="请选择班级"
+                :normalizer="normalizer"
+                :default-expand-level="1"
+                :disable-branch-nodes="true"/>
+            </el-form-item>
+          </el-col>
+        <!--  岗位 -->
+        </el-row>
 
         <el-row :gutter="20">
           <el-col :span="12">
@@ -223,10 +260,13 @@ import {
   getStudentPage,
   updateStudent
 } from "@/api/stucms/student";
+import {listSimpleDepts} from "@/api/system/dept";
+import {listSimplePosts} from "@/api/system/post";
+import Treeselect from "@riophae/vue-treeselect";
 
 export default {
   name: "Student",
-  components: {},
+  components: { Treeselect },
   data() {
     return {
       // 遮罩层
@@ -239,6 +279,16 @@ export default {
       total: 0,
       // 学生管理列表
       list: [],
+      // 部门树选项
+      deptOptions: [],
+      // 岗位选项
+      postOptions: [],
+      // 部门名称
+      deptName: undefined,
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -247,6 +297,7 @@ export default {
       queryParams: {
         pageNo: 1,
         pageSize: 10,
+        deptId: undefined,
         studentUid: null,
         studentName: null,
         sex: null,
@@ -273,6 +324,13 @@ export default {
   },
   created() {
     this.getList();
+    this.getTreeselect();
+  },
+  watch: {
+    // 根据名称筛选部门树
+    deptName(val) {
+      this.$refs.tree.filter(val);
+    }
   },
   methods: {
     /** 查询列表 */
@@ -285,6 +343,19 @@ export default {
         this.loading = false;
       });
     },
+    /** 查询部门下拉树结构 + 岗位下拉 */
+    getTreeselect() {
+      listSimpleDepts().then(response => {
+        // 处理 deptOptions 参数
+        this.deptOptions = [];
+        this.deptOptions.push(...this.handleTree(response.data, "id"));
+      });
+      listSimplePosts().then(response => {
+        // 处理 postOptions 参数
+        this.postOptions = [];
+        this.postOptions.push(...response.data);
+      });
+    },
     /** 取消按钮 */
     cancel() {
       this.open = false;
@@ -294,6 +365,7 @@ export default {
     reset() {
       this.form = {
         id: undefined,
+        deptId: undefined,
         studentUid: undefined,
         studentName: undefined,
         sex: undefined,
@@ -324,12 +396,16 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      // 获得下拉数据
+      this.getTreeselect();
       this.open = true;
       this.title = "添加学生管理";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      // 获得下拉数据
+      this.getTreeselect();
       const id = row.id;
       getStudent(id).then(response => {
         this.form = response.data;
@@ -385,6 +461,24 @@ export default {
         this.exportLoading = false;
       }).catch(() => {
       });
+    },
+    // 筛选节点
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.name.indexOf(value) !== -1;
+    },
+    // 节点单击事件
+    handleNodeClick(data) {
+      this.queryParams.deptId = data.id;
+      this.getList();
+    },
+    // 格式化部门的下拉框
+    normalizer(node) {
+      return {
+        id: node.id,
+        label: node.name,
+        children: node.children
+      }
     }
   }
 };

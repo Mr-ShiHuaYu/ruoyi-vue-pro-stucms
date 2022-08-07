@@ -13,8 +13,12 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class StudentPageReqVO extends PageParam {
 
+    private static final long serialVersionUID = 5652773075221621825L;
     @ApiModelProperty(value = "学号", example = "3042013024")
     private String studentUid;
+
+    @ApiModelProperty(value = "班级ID", example = "1024", notes = "同时筛选子部门")
+    private Long deptId;
 
     @ApiModelProperty(value = "姓名", example = "张三")
     private String studentName;
@@ -33,9 +37,4 @@ public class StudentPageReqVO extends PageParam {
 
     @ApiModelProperty(value = "留守儿童", example = "是")
     private Integer liushou;
-
-    // @ApiModelProperty(value = "创建时间")
-    // @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    // private Date[] createTime;
-
 }

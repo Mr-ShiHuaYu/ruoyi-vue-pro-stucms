@@ -54,7 +54,7 @@ public interface AdminUserApi {
      * @return 用户 Map
      */
     default Map<Long, AdminUserRespDTO> getUserMap(Collection<Long> ids) {
-        List<AdminUserRespDTO> users = getUsers(ids);
+        List<AdminUserRespDTO> users = this.getUsers(ids);
         return CollectionUtils.convertMap(users, AdminUserRespDTO::getId);
     }
 
@@ -67,4 +67,10 @@ public interface AdminUserApi {
      */
     void validUsers(Set<Long> ids);
 
+    /**
+     * 获得部门条件：查询指定部门的子部门编号们，包括自身
+     * @param deptId 部门编号
+     * @return 部门编号集合
+     */
+    Set<Long> getDeptCondition(Long deptId);
 }

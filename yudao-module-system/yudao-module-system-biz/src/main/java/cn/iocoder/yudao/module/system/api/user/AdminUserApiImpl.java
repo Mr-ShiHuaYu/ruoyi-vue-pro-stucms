@@ -24,31 +24,36 @@ public class AdminUserApiImpl implements AdminUserApi {
 
     @Override
     public AdminUserRespDTO getUser(Long id) {
-        AdminUserDO user = userService.getUser(id);
+        AdminUserDO user = this.userService.getUser(id);
         return UserConvert.INSTANCE.convert4(user);
     }
 
     @Override
     public List<AdminUserRespDTO> getUsers(Collection<Long> ids) {
-        List<AdminUserDO> users = userService.getUsers(ids);
+        List<AdminUserDO> users = this.userService.getUsers(ids);
         return UserConvert.INSTANCE.convertList4(users);
     }
 
     @Override
     public List<AdminUserRespDTO> getUsersByDeptIds(Collection<Long> deptIds) {
-        List<AdminUserDO> users = userService.getUsersByDeptIds(deptIds);
+        List<AdminUserDO> users = this.userService.getUsersByDeptIds(deptIds);
         return UserConvert.INSTANCE.convertList4(users);
     }
 
     @Override
     public List<AdminUserRespDTO> getUsersByPostIds(Collection<Long> postIds) {
-        List<AdminUserDO> users = userService.getUsersByPostIds(postIds);
+        List<AdminUserDO> users = this.userService.getUsersByPostIds(postIds);
         return UserConvert.INSTANCE.convertList4(users);
     }
 
     @Override
     public void validUsers(Set<Long> ids) {
-        userService.validUsers(ids);
+        this.userService.validUsers(ids);
+    }
+
+    @Override
+    public Set<Long> getDeptCondition(Long deptId) {
+        return this.userService.getDeptCondition(deptId);
     }
 
 }

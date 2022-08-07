@@ -61,4 +61,6 @@ public interface StudentService {
     List<StudentDO> getStudentList(StudentExportReqVO exportReqVO);
 
     PageResult<StudentDO> getStudentSimplePage(StudentSimplePageReqVO reqVO);
+
+    StudentDO getStudentByUid(String username);
 }

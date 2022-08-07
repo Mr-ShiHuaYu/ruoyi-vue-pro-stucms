@@ -17,6 +17,9 @@ public class StudentRespVO extends StudentBaseVO {
     @ApiModelProperty(value = "主键")
     private Long id;
 
+    @ApiModelProperty(value = "班级ID")
+    private Long deptId;
+
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
@@ -37,4 +40,21 @@ public class StudentRespVO extends StudentBaseVO {
 
     @ApiModelProperty(value = "获奖情况")
     private String huojiang;
+
+    /**
+     * 所在部门
+     */
+    private Dept dept;
+
+    @ApiModel("班级")
+    @Data
+    public static class Dept {
+
+        @ApiModelProperty(value = "班级ID", required = true, example = "1")
+        private Long id;
+
+        @ApiModelProperty(value = "班级名称", required = true, example = "高一1班")
+        private String name;
+
+    }
 }

@@ -104,7 +104,7 @@ public interface RoleService {
      * @return 是否有管理员
      */
     default boolean hasAnySuperAdmin(Set<Long> ids) {
-        return hasAnySuperAdmin(getRolesFromCache(ids));
+        return this.hasAnySuperAdmin(this.getRolesFromCache(ids));
     }
 
     /**
@@ -140,4 +140,5 @@ public interface RoleService {
      */
     void validRoles(Collection<Long> ids);
 
+    Set<Long> getRoleIdByCode(String code);
 }

@@ -1,11 +1,11 @@
 package cn.iocoder.yudao.module.system.service.user;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdatePasswordReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 
 import javax.validation.Valid;
@@ -164,7 +164,7 @@ public interface AdminUserService {
         if (CollUtil.isEmpty(ids)) {
             return new HashMap<>();
         }
-        return CollectionUtils.convertMap(getUsers(ids), AdminUserDO::getId);
+        return CollectionUtils.convertMap(this.getUsers(ids), AdminUserDO::getId);
     }
 
     /**
@@ -217,4 +217,11 @@ public interface AdminUserService {
      */
     boolean isPasswordMatch(String rawPassword, String encodedPassword);
 
+
+    /**
+     * 获得部门条件：查询指定部门的子部门编号们，包括自身
+     * @param deptId 部门编号
+     * @return 部门编号集合
+     */
+    Set<Long> getDeptCondition(Long deptId);
 }

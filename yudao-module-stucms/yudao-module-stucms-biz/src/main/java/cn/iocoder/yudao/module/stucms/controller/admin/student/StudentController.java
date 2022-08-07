@@ -1,13 +1,17 @@
 package cn.iocoder.yudao.module.stucms.controller.admin.student;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
 import cn.iocoder.yudao.module.stucms.controller.admin.student.vo.*;
 import cn.iocoder.yudao.module.stucms.convert.student.StudentConvert;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.student.StudentDO;
 import cn.iocoder.yudao.module.stucms.service.student.StudentService;
+import cn.iocoder.yudao.module.system.api.dept.DeptApi;
+import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.EXPORT;
@@ -32,6 +38,10 @@ public class StudentController {
 
     @Resource
     private StudentService studentService;
+
+    @Resource
+    private DeptApi deptApi;
+
 
     @PostMapping("/create")
     @ApiOperation("创建学生管理")
@@ -63,7 +73,11 @@ public class StudentController {
     @PreAuthorize("@ss.hasPermission('stucms:student:query')")
     public CommonResult<StudentRespVO> getStudent(@RequestParam("id") Long id) {
         StudentDO student = this.studentService.getStudent(id);
-        return success(StudentConvert.INSTANCE.convert(student));
+        Long deptId = student.getDeptId();
+        StudentRespVO.Dept dept = StudentConvert.INSTANCE.convert01(this.deptApi.getDept(deptId));
+        StudentRespVO studentRespVO = StudentConvert.INSTANCE.convert(student);
+        studentRespVO.setDept(dept);
+        return success(studentRespVO);
     }
 
     @GetMapping("/simple-page")
@@ -79,7 +93,25 @@ public class StudentController {
     @PreAuthorize("@ss.hasPermission('stucms:student:query')")
     public CommonResult<PageResult<StudentRespVO>> getStudentPage(@Valid StudentPageReqVO pageVO) {
         PageResult<StudentDO> pageResult = this.studentService.getStudentPage(pageVO);
-        return success(StudentConvert.INSTANCE.convertPage(pageResult));
+        // 如果为空,直接返回
+        if (CollUtil.isEmpty(pageResult.getList())){
+            return success(new PageResult<>(pageResult.getTotal()));
+        }
+
+        PageResult<StudentRespVO> voPage = StudentConvert.INSTANCE.convertPage(pageResult);
+        // 获取全部的部门id
+        Set<Long> deptIds = CollectionUtils.convertSet(pageResult.getList(), StudentDO::getDeptId);
+        // 如果不是空的,设置学生列表中的每一个部门信息
+        if (CollUtil.isNotEmpty(deptIds)) {
+            Map<Long, DeptRespDTO> deptMap = this.deptApi.getDeptMap(deptIds);
+            voPage.getList().forEach(vo -> {
+                DeptRespDTO respDTO = deptMap.get(vo.getDeptId());
+                StudentRespVO.Dept dept = StudentConvert.INSTANCE.convert01(respDTO);
+                vo.setDept(dept);
+            });
+        }
+
+        return success(voPage);
     }
 
     @GetMapping("/export-excel")

@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.stucms.dal.dataobject.student.StudentDO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 学生管理 Mapper
@@ -19,7 +20,7 @@ import java.util.List;
 @Mapper
 public interface StudentMapper extends BaseMapperX<StudentDO> {
 
-    default PageResult<StudentDO> selectPage(StudentPageReqVO reqVO) {
+    default PageResult<StudentDO> selectPage(StudentPageReqVO reqVO, Set<Long> deptIds) {
         return this.selectPage(reqVO, new LambdaQueryWrapperX<StudentDO>()
             .likeIfPresent(StudentDO::getStudentUid, reqVO.getStudentUid())
             .likeIfPresent(StudentDO::getStudentName, reqVO.getStudentName())
@@ -27,7 +28,9 @@ public interface StudentMapper extends BaseMapperX<StudentDO> {
             .likeIfPresent(StudentDO::getPhone, reqVO.getPhone())
             .likeIfPresent(StudentDO::getSysid, reqVO.getSysid())
             .eqIfPresent(StudentDO::getJishu, reqVO.getJishu())
-            .eqIfPresent(StudentDO::getLiushou, reqVO.getLiushou()));
+            .eqIfPresent(StudentDO::getLiushou, reqVO.getLiushou())
+            .inIfPresent(StudentDO::getDeptId, deptIds)
+        );
     }
 
     default PageResult<StudentDO> selectSimplePage(StudentSimplePageReqVO reqVO) {

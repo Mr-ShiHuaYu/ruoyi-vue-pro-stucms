@@ -45,7 +45,7 @@
 
     <!-- 列表 -->
     <el-table v-loading="loading" :data="list"  @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column v-hasPermi="['stucms:exam:delete']" type="selection" width="55" align="center"/>
       <el-table-column label="序号" type="index" align="center"/>
       <!--<el-table-column label="主键" align="center" prop="examId" />-->
       <el-table-column label="考试名称" align="center" prop="examName" />
@@ -59,7 +59,7 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" v-if="checkPermi(['stucms:exam:update','stucms:exam:delete'])">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
                      v-hasPermi="['stucms:exam:update']">修改</el-button>
@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import { createExam, updateExam, deleteExam, getExam, getExamPage, exportExamExcel } from "@/api/stucms/exam";
+import {createExam, deleteExam, exportExamExcel, getExam, getExamPage, updateExam} from "@/api/stucms/exam";
 
 export default {
   name: "Exam",

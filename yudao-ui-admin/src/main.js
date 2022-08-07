@@ -18,6 +18,7 @@ import './permission' // permission control
 import {getDicts} from "@/api/system/dict/data";
 import {getConfigKey} from "@/api/infra/config";
 import {handleTree, parseDate, parseTime, resetForm} from "@/utils/ruoyi";
+import {checkPermi} from "@/utils/permission"
 import Pagination from "@/components/Pagination";
 // 自定义表格工具扩展
 import RightToolbar from "@/components/RightToolbar"
@@ -31,13 +32,13 @@ import DocAlert from '@/components/DocAlert'
 // 头部标签插件
 import VueMeta from 'vue-meta'
 // bpmnProcessDesigner 需要引入
-import MyPD from "@/components/bpmnProcessDesigner/package/index.js";
-import "@/components/bpmnProcessDesigner/package/theme/index.scss";
-import "bpmn-js/dist/assets/diagram-js.css";
-import "bpmn-js/dist/assets/bpmn-font/css/bpmn.css";
-import "bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css";
-import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
-
+// todo 工作流相关资源暂时注释
+// import MyPD from "@/components/bpmnProcessDesigner/package/index.js";
+// import "@/components/bpmnProcessDesigner/package/theme/index.scss";
+// import "bpmn-js/dist/assets/diagram-js.css";
+// import "bpmn-js/dist/assets/bpmn-font/css/bpmn.css";
+// import "bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css";
+// import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
 // Form Generator 组件需要使用到 tinymce
 import Tinymce from '@/components/tinymce/index.vue'
 import '@/icons'
@@ -47,6 +48,7 @@ import '@/styles/index.scss'
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
+Vue.prototype.checkPermi = checkPermi
 Vue.prototype.parseTime = parseTime
 Vue.prototype.parseDate = parseDate
 Vue.prototype.resetForm = resetForm
@@ -85,7 +87,7 @@ Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
 // Vue.use(hljs.vuePlugin);
-Vue.use(MyPD);
+// Vue.use(MyPD); // BPM暂时注释
 
 Vue.component('tinymce', Tinymce)
 // console.log(request)

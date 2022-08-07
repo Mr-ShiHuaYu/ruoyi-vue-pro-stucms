@@ -98,7 +98,7 @@
 #end
 #end
 #end
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" v-if="checkPermi(['${permissionPrefix}:update','${permissionPrefix}:delete'])">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
                      v-hasPermi="['${permissionPrefix}:update']">修改</el-button>
@@ -195,15 +195,15 @@
 </template>
 
 <script>
-import { create${simpleClassName}, update${simpleClassName}, delete${simpleClassName}, get${simpleClassName}, get${simpleClassName}Page, export${simpleClassName}Excel } from "@/api/${table.moduleName}/${classNameVar}";
-#if ($hasImageUploadColumn)
-import ImageUpload from '@/components/ImageUpload';
+  import {export${simpleClassName}Excel, get${simpleClassName}} from "@/api/";
+  import ImageUpload from '@/components/ImageUpload';
+  import FileUpload from '@/components/FileUpload';
+  import Editor from '@/components/Editor';
+    #if ($hasImageUploadColumn)
 #end
 #if ($hasFileUploadColumn)
-import FileUpload from '@/components/FileUpload';
 #end
 #if ($hasEditorColumn)
-import Editor from '@/components/Editor';
 #end
 
 export default {

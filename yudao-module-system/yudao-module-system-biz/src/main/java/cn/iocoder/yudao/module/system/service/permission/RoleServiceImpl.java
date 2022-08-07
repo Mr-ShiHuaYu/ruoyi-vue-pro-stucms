@@ -6,7 +6,6 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
-import cn.iocoder.yudao.module.system.enums.permission.DataScopeEnum;
 import cn.iocoder.yudao.framework.tenant.core.aop.TenantIgnore;
 import cn.iocoder.yudao.module.system.controller.admin.permission.vo.role.RoleCreateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.permission.vo.role.RoleExportReqVO;
@@ -15,6 +14,7 @@ import cn.iocoder.yudao.module.system.controller.admin.permission.vo.role.RoleUp
 import cn.iocoder.yudao.module.system.convert.permission.RoleConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.permission.RoleDO;
 import cn.iocoder.yudao.module.system.dal.mysql.permission.RoleMapper;
+import cn.iocoder.yudao.module.system.enums.permission.DataScopeEnum;
 import cn.iocoder.yudao.module.system.enums.permission.RoleCodeEnum;
 import cn.iocoder.yudao.module.system.enums.permission.RoleTypeEnum;
 import cn.iocoder.yudao.module.system.mq.producer.permission.RoleProducer;
@@ -56,7 +56,7 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 角色缓存
      * key：角色编号 {@link RoleDO#getId()}
-     *
+     * <p>
      * 这里声明 volatile 修饰的原因是，每次刷新时，直接修改指向
      */
     @Getter
@@ -88,20 +88,20 @@ public class RoleServiceImpl implements RoleService {
     @TenantIgnore // 忽略自动多租户，全局初始化缓存
     public void initLocalCache() {
         // 获取角色列表，如果有更新
-        List<RoleDO> roleList = loadRoleIfUpdate(maxUpdateTime);
+        List<RoleDO> roleList = this.loadRoleIfUpdate(this.maxUpdateTime);
         if (CollUtil.isEmpty(roleList)) {
             return;
         }
 
         // 写入缓存
-        roleCache = CollectionUtils.convertMap(roleList, RoleDO::getId);
-        maxUpdateTime = CollectionUtils.getMaxValue(roleList, RoleDO::getUpdateTime);
+        this.roleCache = CollectionUtils.convertMap(roleList, RoleDO::getId);
+        this.maxUpdateTime = CollectionUtils.getMaxValue(roleList, RoleDO::getUpdateTime);
         log.info("[initLocalCache][初始化 Role 数量为 {}]", roleList.size());
     }
 
     @Scheduled(fixedDelay = SCHEDULER_PERIOD, initialDelay = SCHEDULER_PERIOD)
     public void schedulePeriodicRefresh() {
-       self.initLocalCache();
+        this.self.initLocalCache();
     }
 
     /**
@@ -116,31 +116,31 @@ public class RoleServiceImpl implements RoleService {
         if (maxUpdateTime == null) { // 如果更新时间为空，说明 DB 一定有新数据
             log.info("[loadRoleIfUpdate][首次加载全量角色]");
         } else { // 判断数据库中是否有更新的角色
-            if (roleMapper.selectCountByUpdateTimeGt(maxUpdateTime) == 0) {
+            if (this.roleMapper.selectCountByUpdateTimeGt(maxUpdateTime) == 0) {
                 return null;
             }
             log.info("[loadRoleIfUpdate][增量加载全量角色]");
         }
         // 第二步，如果有更新，则从数据库加载所有角色
-        return roleMapper.selectList();
+        return this.roleMapper.selectList();
     }
 
     @Override
     @Transactional
     public Long createRole(RoleCreateReqVO reqVO, Integer type) {
         // 校验角色
-        checkDuplicateRole(reqVO.getName(), reqVO.getCode(), null);
+        this.checkDuplicateRole(reqVO.getName(), reqVO.getCode(), null);
         // 插入到数据库
         RoleDO role = RoleConvert.INSTANCE.convert(reqVO);
         role.setType(ObjectUtil.defaultIfNull(type, RoleTypeEnum.CUSTOM.getType()));
         role.setStatus(CommonStatusEnum.ENABLE.getStatus());
         role.setDataScope(DataScopeEnum.ALL.getScope()); // 默认可查看所有数据。原因是，可能一些项目不需要项目权限
-        roleMapper.insert(role);
+        this.roleMapper.insert(role);
         // 发送刷新消息
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                roleProducer.sendRoleRefreshMessage();
+                RoleServiceImpl.this.roleProducer.sendRoleRefreshMessage();
             }
         });
         // 返回
@@ -150,42 +150,42 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void updateRole(RoleUpdateReqVO reqVO) {
         // 校验是否可以更新
-        checkUpdateRole(reqVO.getId());
+        this.checkUpdateRole(reqVO.getId());
         // 校验角色的唯一字段是否重复
-        checkDuplicateRole(reqVO.getName(), reqVO.getCode(), reqVO.getId());
+        this.checkDuplicateRole(reqVO.getName(), reqVO.getCode(), reqVO.getId());
 
         // 更新到数据库
         RoleDO updateObject = RoleConvert.INSTANCE.convert(reqVO);
-        roleMapper.updateById(updateObject);
+        this.roleMapper.updateById(updateObject);
         // 发送刷新消息
-        roleProducer.sendRoleRefreshMessage();
+        this.roleProducer.sendRoleRefreshMessage();
     }
 
     @Override
     public void updateRoleStatus(Long id, Integer status) {
         // 校验是否可以更新
-        checkUpdateRole(id);
+        this.checkUpdateRole(id);
         // 更新状态
         RoleDO updateObject = new RoleDO();
         updateObject.setId(id);
         updateObject.setStatus(status);
-        roleMapper.updateById(updateObject);
+        this.roleMapper.updateById(updateObject);
         // 发送刷新消息
-        roleProducer.sendRoleRefreshMessage();
+        this.roleProducer.sendRoleRefreshMessage();
     }
 
     @Override
     public void updateRoleDataScope(Long id, Integer dataScope, Set<Long> dataScopeDeptIds) {
         // 校验是否可以更新
-        checkUpdateRole(id);
+        this.checkUpdateRole(id);
         // 更新数据范围
         RoleDO updateObject = new RoleDO();
         updateObject.setId(id);
         updateObject.setDataScope(dataScope);
         updateObject.setDataScopeDeptIds(dataScopeDeptIds);
-        roleMapper.updateById(updateObject);
+        this.roleMapper.updateById(updateObject);
         // 发送刷新消息
-        roleProducer.sendRoleRefreshMessage();
+        this.roleProducer.sendRoleRefreshMessage();
     }
 
     @Override
@@ -194,15 +194,15 @@ public class RoleServiceImpl implements RoleService {
         // 校验是否可以更新
         this.checkUpdateRole(id);
         // 标记删除
-        roleMapper.deleteById(id);
+        this.roleMapper.deleteById(id);
         // 删除相关数据
-        permissionService.processRoleDeleted(id);
+        this.permissionService.processRoleDeleted(id);
         // 发送刷新消息. 注意，需要事务提交后，在进行发送刷新消息。不然 db 还未提交，结果缓存先刷新了
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 
             @Override
             public void afterCommit() {
-                roleProducer.sendRoleRefreshMessage();
+                RoleServiceImpl.this.roleProducer.sendRoleRefreshMessage();
             }
 
         });
@@ -210,15 +210,15 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDO getRoleFromCache(Long id) {
-        return roleCache.get(id);
+        return this.roleCache.get(id);
     }
 
     @Override
     public List<RoleDO> getRoles(@Nullable Collection<Integer> statuses) {
         if (CollUtil.isEmpty(statuses)) {
-    		return roleMapper.selectList();
-		}
-        return roleMapper.selectListByStatus(statuses);
+            return this.roleMapper.selectList();
+        }
+        return this.roleMapper.selectListByStatus(statuses);
     }
 
     @Override
@@ -226,8 +226,8 @@ public class RoleServiceImpl implements RoleService {
         if (CollectionUtil.isEmpty(ids)) {
             return Collections.emptyList();
         }
-        return roleCache.values().stream().filter(roleDO -> ids.contains(roleDO.getId()))
-                .collect(Collectors.toList());
+        return this.roleCache.values().stream().filter(roleDO -> ids.contains(roleDO.getId()))
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -240,28 +240,28 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDO getRole(Long id) {
-        return roleMapper.selectById(id);
+        return this.roleMapper.selectById(id);
     }
 
     @Override
     public PageResult<RoleDO> getRolePage(RolePageReqVO reqVO) {
-        return roleMapper.selectPage(reqVO);
+        return this.roleMapper.selectPage(reqVO);
     }
 
     @Override
     public List<RoleDO> getRoleList(RoleExportReqVO reqVO) {
-        return roleMapper.selectList(reqVO);
+        return this.roleMapper.selectList(reqVO);
     }
 
     /**
      * 校验角色的唯一字段是否重复
-     *
+     * <p>
      * 1. 是否存在相同名字的角色
      * 2. 是否存在相同编码的角色
      *
      * @param name 角色名字
      * @param code 角色额编码
-     * @param id 角色编号
+     * @param id   角色编号
      */
     @VisibleForTesting
     public void checkDuplicateRole(String name, String code, Long id) {
@@ -270,7 +270,7 @@ public class RoleServiceImpl implements RoleService {
             throw exception(ROLE_ADMIN_CODE_ERROR, code);
         }
         // 1. 该 name 名字被其它角色所使用
-        RoleDO role = roleMapper.selectByName(name);
+        RoleDO role = this.roleMapper.selectByName(name);
         if (role != null && !role.getId().equals(id)) {
             throw exception(ROLE_NAME_DUPLICATE, name);
         }
@@ -279,7 +279,7 @@ public class RoleServiceImpl implements RoleService {
             return;
         }
         // 该 code 编码被其它角色所使用
-        role = roleMapper.selectByCode(code);
+        role = this.roleMapper.selectByCode(code);
         if (role != null && !role.getId().equals(id)) {
             throw exception(ROLE_CODE_DUPLICATE, code);
         }
@@ -292,7 +292,7 @@ public class RoleServiceImpl implements RoleService {
      */
     @VisibleForTesting
     public void checkUpdateRole(Long id) {
-        RoleDO roleDO = roleMapper.selectById(id);
+        RoleDO roleDO = this.roleMapper.selectById(id);
         if (roleDO == null) {
             throw exception(ROLE_NOT_EXISTS);
         }
@@ -308,7 +308,7 @@ public class RoleServiceImpl implements RoleService {
             return;
         }
         // 获得角色信息
-        List<RoleDO> roles = roleMapper.selectBatchIds(ids);
+        List<RoleDO> roles = this.roleMapper.selectBatchIds(ids);
         Map<Long, RoleDO> roleMap = CollectionUtils.convertMap(roles, RoleDO::getId);
         // 校验
         ids.forEach(id -> {
@@ -320,5 +320,11 @@ public class RoleServiceImpl implements RoleService {
                 throw exception(ROLE_IS_DISABLE, role.getName());
             }
         });
+    }
+
+    @Override
+    public Set<Long> getRoleIdByCode(String code) {
+        List<RoleDO> list = this.roleMapper.selectList(RoleDO::getCode, code);
+        return CollectionUtils.convertSet(list,RoleDO::getId);
     }
 }

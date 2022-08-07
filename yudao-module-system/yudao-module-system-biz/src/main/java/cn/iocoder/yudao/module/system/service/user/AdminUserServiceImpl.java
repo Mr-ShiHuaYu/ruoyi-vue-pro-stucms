@@ -47,7 +47,7 @@ import static cn.iocoder.yudao.module.system.enums.ErrorCodeConstants.*;
 @Slf4j
 public class AdminUserServiceImpl implements AdminUserService {
 
-    @Value("${sys.user.init-password:yudaoyuanma}")
+    @Value("${sys.user.init-password:123456}")
     private String userInitPassword;
 
     @Resource
@@ -75,23 +75,23 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Transactional(rollbackFor = Exception.class)
     public Long createUser(UserCreateReqVO reqVO) {
         // 校验账户配合
-        tenantService.handleTenantInfo(tenant -> {
-            long count = userMapper.selectCount();
+        this.tenantService.handleTenantInfo(tenant -> {
+            long count = this.userMapper.selectCount();
             if (count >= tenant.getAccountCount()) {
                 throw exception(USER_COUNT_MAX, tenant.getAccountCount());
             }
         });
         // 校验正确性
-        checkCreateOrUpdate(null, reqVO.getUsername(), reqVO.getMobile(), reqVO.getEmail(),
+        this.checkCreateOrUpdate(null, reqVO.getUsername(), reqVO.getMobile(), reqVO.getEmail(),
                 reqVO.getDeptId(), reqVO.getPostIds());
         // 插入用户
         AdminUserDO user = UserConvert.INSTANCE.convert(reqVO);
         user.setStatus(CommonStatusEnum.ENABLE.getStatus()); // 默认开启
-        user.setPassword(encodePassword(reqVO.getPassword())); // 加密密码
-        userMapper.insert(user);
+        user.setPassword(this.encodePassword(reqVO.getPassword())); // 加密密码
+        this.userMapper.insert(user);
         // 插入关联岗位
         if (CollectionUtil.isNotEmpty(user.getPostIds())) {
-            userPostMapper.insertBatch(convertList(user.getPostIds(),
+            this.userPostMapper.insertBatch(convertList(user.getPostIds(),
                     postId -> new UserPostDO().setUserId(user.getId()).setPostId(postId)));
         }
         return user.getId();
@@ -101,123 +101,123 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Transactional(rollbackFor = Exception.class)
     public void updateUser(UserUpdateReqVO reqVO) {
         // 校验正确性
-        checkCreateOrUpdate(reqVO.getId(), reqVO.getUsername(), reqVO.getMobile(), reqVO.getEmail(),
+        this.checkCreateOrUpdate(reqVO.getId(), reqVO.getUsername(), reqVO.getMobile(), reqVO.getEmail(),
                 reqVO.getDeptId(), reqVO.getPostIds());
         // 更新用户
         AdminUserDO updateObj = UserConvert.INSTANCE.convert(reqVO);
-        userMapper.updateById(updateObj);
+        this.userMapper.updateById(updateObj);
         // 更新岗位
-        updateUserPost(reqVO, updateObj);
+        this.updateUserPost(reqVO, updateObj);
     }
 
     private void updateUserPost(UserUpdateReqVO reqVO, AdminUserDO updateObj) {
         Long userId = reqVO.getId();
-        Set<Long> dbPostIds = convertSet(userPostMapper.selectListByUserId(userId), UserPostDO::getPostId);
+        Set<Long> dbPostIds = convertSet(this.userPostMapper.selectListByUserId(userId), UserPostDO::getPostId);
         // 计算新增和删除的岗位编号
         Set<Long> postIds = updateObj.getPostIds();
         Collection<Long> createPostIds = CollUtil.subtract(postIds, dbPostIds);
         Collection<Long> deletePostIds = CollUtil.subtract(dbPostIds, postIds);
         // 执行新增和删除。对于已经授权的菜单，不用做任何处理
         if (!CollectionUtil.isEmpty(createPostIds)) {
-            userPostMapper.insertBatch(convertList(createPostIds,
+            this.userPostMapper.insertBatch(convertList(createPostIds,
                     postId -> new UserPostDO().setUserId(userId).setPostId(postId)));
         }
         if (!CollectionUtil.isEmpty(deletePostIds)) {
-            userPostMapper.deleteByUserIdAndPostId(userId, deletePostIds);
+            this.userPostMapper.deleteByUserIdAndPostId(userId, deletePostIds);
         }
     }
 
     @Override
     public void updateUserLogin(Long id, String loginIp) {
-        userMapper.updateById(new AdminUserDO().setId(id).setLoginIp(loginIp).setLoginDate(new Date()));
+        this.userMapper.updateById(new AdminUserDO().setId(id).setLoginIp(loginIp).setLoginDate(new Date()));
     }
 
     @Override
     public void updateUserProfile(Long id, UserProfileUpdateReqVO reqVO) {
         // 校验正确性
-        checkUserExists(id);
-        checkEmailUnique(id, reqVO.getEmail());
-        checkMobileUnique(id, reqVO.getMobile());
+        this.checkUserExists(id);
+        this.checkEmailUnique(id, reqVO.getEmail());
+        this.checkMobileUnique(id, reqVO.getMobile());
         // 执行更新
-        userMapper.updateById(UserConvert.INSTANCE.convert(reqVO).setId(id));
+        this.userMapper.updateById(UserConvert.INSTANCE.convert(reqVO).setId(id));
     }
 
     @Override
     public void updateUserPassword(Long id, UserProfileUpdatePasswordReqVO reqVO) {
         // 校验旧密码密码
-        checkOldPassword(id, reqVO.getOldPassword());
+        this.checkOldPassword(id, reqVO.getOldPassword());
         // 执行更新
         AdminUserDO updateObj = new AdminUserDO().setId(id);
-        updateObj.setPassword(encodePassword(reqVO.getNewPassword())); // 加密密码
-        userMapper.updateById(updateObj);
+        updateObj.setPassword(this.encodePassword(reqVO.getNewPassword())); // 加密密码
+        this.userMapper.updateById(updateObj);
     }
 
     @Override
     public String updateUserAvatar(Long id, InputStream avatarFile) throws Exception {
-        checkUserExists(id);
+        this.checkUserExists(id);
         // 存储文件
-        String avatar = fileApi.createFile(IoUtil.readBytes(avatarFile));
+        String avatar = this.fileApi.createFile(IoUtil.readBytes(avatarFile));
         // 更新路径
         AdminUserDO sysUserDO = new AdminUserDO();
         sysUserDO.setId(id);
         sysUserDO.setAvatar(avatar);
-        userMapper.updateById(sysUserDO);
+        this.userMapper.updateById(sysUserDO);
         return avatar;
     }
 
     @Override
     public void updateUserPassword(Long id, String password) {
         // 校验用户存在
-        checkUserExists(id);
+        this.checkUserExists(id);
         // 更新密码
         AdminUserDO updateObj = new AdminUserDO();
         updateObj.setId(id);
-        updateObj.setPassword(encodePassword(password)); // 加密密码
-        userMapper.updateById(updateObj);
+        updateObj.setPassword(this.encodePassword(password)); // 加密密码
+        this.userMapper.updateById(updateObj);
     }
 
     @Override
     public void updateUserStatus(Long id, Integer status) {
         // 校验用户存在
-        checkUserExists(id);
+        this.checkUserExists(id);
         // 更新状态
         AdminUserDO updateObj = new AdminUserDO();
         updateObj.setId(id);
         updateObj.setStatus(status);
-        userMapper.updateById(updateObj);
+        this.userMapper.updateById(updateObj);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteUser(Long id) {
         // 校验用户存在
-        checkUserExists(id);
+        this.checkUserExists(id);
         // 删除用户
-        userMapper.deleteById(id);
+        this.userMapper.deleteById(id);
         // 删除用户关联数据
-        permissionService.processUserDeleted(id);
+        this.permissionService.processUserDeleted(id);
         // 删除用户岗位
-        userPostMapper.deleteByUserId(id);
+        this.userPostMapper.deleteByUserId(id);
     }
 
     @Override
     public AdminUserDO getUserByUsername(String username) {
-        return userMapper.selectByUsername(username);
+        return this.userMapper.selectByUsername(username);
     }
 
     @Override
     public AdminUserDO getUserByMobile(String mobile) {
-        return userMapper.selectByMobile(mobile);
+        return this.userMapper.selectByMobile(mobile);
     }
 
     @Override
     public PageResult<AdminUserDO> getUserPage(UserPageReqVO reqVO) {
-        return userMapper.selectPage(reqVO, getDeptCondition(reqVO.getDeptId()));
+        return this.userMapper.selectPage(reqVO, this.getDeptCondition(reqVO.getDeptId()));
     }
 
     @Override
     public AdminUserDO getUser(Long id) {
-        return userMapper.selectById(id);
+        return this.userMapper.selectById(id);
     }
 
     @Override
@@ -225,7 +225,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         if (CollUtil.isEmpty(deptIds)) {
             return Collections.emptyList();
         }
-        return userMapper.selectListByDeptIds(deptIds);
+        return this.userMapper.selectListByDeptIds(deptIds);
     }
 
     @Override
@@ -233,11 +233,11 @@ public class AdminUserServiceImpl implements AdminUserService {
         if (CollUtil.isEmpty(postIds)) {
             return Collections.emptyList();
         }
-        Set<Long> userIds = convertSet(userPostMapper.selectListByPostIds(postIds), UserPostDO::getUserId);
+        Set<Long> userIds = convertSet(this.userPostMapper.selectListByPostIds(postIds), UserPostDO::getUserId);
         if (CollUtil.isEmpty(userIds)) {
             return Collections.emptyList();
         }
-        return userMapper.selectBatchIds(userIds);
+        return this.userMapper.selectBatchIds(userIds);
     }
 
     @Override
@@ -245,7 +245,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         if (CollUtil.isEmpty(ids)) {
             return Collections.emptyList();
         }
-        return userMapper.selectBatchIds(ids);
+        return this.userMapper.selectBatchIds(ids);
     }
 
     @Override
@@ -254,7 +254,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             return;
         }
         // 获得岗位信息
-        List<AdminUserDO> users = userMapper.selectBatchIds(ids);
+        List<AdminUserDO> users = this.userMapper.selectBatchIds(ids);
         Map<Long, AdminUserDO> userMap = CollectionUtils.convertMap(users, AdminUserDO::getId);
         // 校验
         ids.forEach(id -> {
@@ -270,17 +270,17 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public List<AdminUserDO> getUsers(UserExportReqVO reqVO) {
-        return userMapper.selectList(reqVO, getDeptCondition(reqVO.getDeptId()));
+        return this.userMapper.selectList(reqVO, this.getDeptCondition(reqVO.getDeptId()));
     }
 
     @Override
     public List<AdminUserDO> getUsersByNickname(String nickname) {
-        return userMapper.selectListByNickname(nickname);
+        return this.userMapper.selectListByNickname(nickname);
     }
 
     @Override
     public List<AdminUserDO> getUsersByUsername(String username) {
-        return userMapper.selectListByUsername(username);
+        return this.userMapper.selectListByUsername(username);
     }
 
     /**
@@ -288,11 +288,12 @@ public class AdminUserServiceImpl implements AdminUserService {
      * @param deptId 部门编号
      * @return 部门编号集合
      */
-    private Set<Long> getDeptCondition(Long deptId) {
+    @Override
+    public Set<Long> getDeptCondition(Long deptId) {
         if (deptId == null) {
             return Collections.emptySet();
         }
-        Set<Long> deptIds = convertSet(deptService.getDeptsByParentIdFromCache(
+        Set<Long> deptIds = convertSet(this.deptService.getDeptsByParentIdFromCache(
                 deptId, true), DeptDO::getId);
         deptIds.add(deptId); // 包括自身
         return deptIds;
@@ -301,17 +302,17 @@ public class AdminUserServiceImpl implements AdminUserService {
     private void checkCreateOrUpdate(Long id, String username, String mobile, String email,
                                      Long deptId, Set<Long> postIds) {
         // 校验用户存在
-        checkUserExists(id);
+        this.checkUserExists(id);
         // 校验用户名唯一
-        checkUsernameUnique(id, username);
+        this.checkUsernameUnique(id, username);
         // 校验手机号唯一
-        checkMobileUnique(id, mobile);
+        this.checkMobileUnique(id, mobile);
         // 校验邮箱唯一
-        checkEmailUnique(id, email);
+        this.checkEmailUnique(id, email);
         // 校验部门处于开启状态
-        deptService.validDepts(CollectionUtils.singleton(deptId));
+        this.deptService.validDepts(CollectionUtils.singleton(deptId));
         // 校验岗位处于开启状态
-        postService.validPosts(postIds);
+        this.postService.validPosts(postIds);
     }
 
     @VisibleForTesting
@@ -319,7 +320,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         if (id == null) {
             return;
         }
-        AdminUserDO user = userMapper.selectById(id);
+        AdminUserDO user = this.userMapper.selectById(id);
         if (user == null) {
             throw exception(USER_NOT_EXISTS);
         }
@@ -330,7 +331,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         if (StrUtil.isBlank(username)) {
             return;
         }
-        AdminUserDO user = userMapper.selectByUsername(username);
+        AdminUserDO user = this.userMapper.selectByUsername(username);
         if (user == null) {
             return;
         }
@@ -348,7 +349,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         if (StrUtil.isBlank(email)) {
             return;
         }
-        AdminUserDO user = userMapper.selectByEmail(email);
+        AdminUserDO user = this.userMapper.selectByEmail(email);
         if (user == null) {
             return;
         }
@@ -366,7 +367,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         if (StrUtil.isBlank(mobile)) {
             return;
         }
-        AdminUserDO user = userMapper.selectByMobile(mobile);
+        AdminUserDO user = this.userMapper.selectByMobile(mobile);
         if (user == null) {
             return;
         }
@@ -386,11 +387,11 @@ public class AdminUserServiceImpl implements AdminUserService {
      */
     @VisibleForTesting
     public void checkOldPassword(Long id, String oldPassword) {
-        AdminUserDO user = userMapper.selectById(id);
+        AdminUserDO user = this.userMapper.selectById(id);
         if (user == null) {
             throw exception(USER_NOT_EXISTS);
         }
-        if (!isPasswordMatch(oldPassword, user.getPassword())) {
+        if (!this.isPasswordMatch(oldPassword, user.getPassword())) {
             throw exception(USER_PASSWORD_FAILED);
         }
     }
@@ -406,17 +407,17 @@ public class AdminUserServiceImpl implements AdminUserService {
         importUsers.forEach(importUser -> {
             // 校验，判断是否有不符合的原因
             try {
-                checkCreateOrUpdate(null, null, importUser.getMobile(), importUser.getEmail(),
+                this.checkCreateOrUpdate(null, null, importUser.getMobile(), importUser.getEmail(),
                         importUser.getDeptId(), null);
             } catch (ServiceException ex) {
                 respVO.getFailureUsernames().put(importUser.getUsername(), ex.getMessage());
                 return;
             }
             // 判断如果不存在，在进行插入
-            AdminUserDO existUser = userMapper.selectByUsername(importUser.getUsername());
+            AdminUserDO existUser = this.userMapper.selectByUsername(importUser.getUsername());
             if (existUser == null) {
-                userMapper.insert(UserConvert.INSTANCE.convert(importUser)
-                        .setPassword(encodePassword(userInitPassword))); // 设置默认密码
+                this.userMapper.insert(UserConvert.INSTANCE.convert(importUser)
+                        .setPassword(this.encodePassword(this.userInitPassword))); // 设置默认密码
                 respVO.getCreateUsernames().add(importUser.getUsername());
                 return;
             }
@@ -427,7 +428,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             }
             AdminUserDO updateUser = UserConvert.INSTANCE.convert(importUser);
             updateUser.setId(existUser.getId());
-            userMapper.updateById(updateUser);
+            this.userMapper.updateById(updateUser);
             respVO.getUpdateUsernames().add(importUser.getUsername());
         });
         return respVO;
@@ -435,12 +436,12 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public List<AdminUserDO> getUsersByStatus(Integer status) {
-        return userMapper.selectListByStatus(status);
+        return this.userMapper.selectListByStatus(status);
     }
 
     @Override
     public boolean isPasswordMatch(String rawPassword, String encodedPassword) {
-        return passwordEncoder.matches(rawPassword, encodedPassword);
+        return this.passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
     /**
@@ -450,7 +451,7 @@ public class AdminUserServiceImpl implements AdminUserService {
      * @return 加密后的密码
      */
     private String encodePassword(String password) {
-        return passwordEncoder.encode(password);
+        return this.passwordEncoder.encode(password);
     }
 
 }

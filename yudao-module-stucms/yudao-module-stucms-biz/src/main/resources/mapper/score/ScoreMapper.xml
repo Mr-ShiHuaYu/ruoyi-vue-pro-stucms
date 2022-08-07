@@ -13,8 +13,8 @@
                SUM(sc.score)            as sum,
                format(STD(sc.score), 2) as std
         FROM stucms_score AS sc
-                 LEFT JOIN stucms_student AS st ON sc.student_id = st.student_id
-                 LEFT JOIN stucms_exam AS e ON sc.exam_id = e.exam_id
+                 INNER JOIN stucms_student AS st ON sc.student_id = st.student_id
+                 INNER JOIN stucms_exam AS e ON sc.exam_id = e.exam_id
             ${ew.customSqlSegment}
 
         GROUP BY

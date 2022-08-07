@@ -60,7 +60,7 @@
     <!-- 列表 -->
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
       <!--<el-table-column label="主键" align="center" prop="courseId" />-->
-      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column v-hasPermi="['stucms:course:delete']" type="selection" width="55" align="center"/>
       <el-table-column label="序号" type="index" align="center"/>
 
       <el-table-column label="名称" align="center" prop="courseName"/>
@@ -88,7 +88,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" v-if="checkPermi(['stucms:course:update','stucms:course:delete'])">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
                      v-hasPermi="['stucms:course:update']"
@@ -115,9 +115,6 @@
         <el-form-item label="总分" prop="courseFull">
           <el-input v-model="form.courseFull" placeholder="请输入总分"/>
         </el-form-item>
-        <!--<el-form-item label="授课老师" prop="teacherId">-->
-        <!--  <el-input v-model="form.teacherId" placeholder="请输入授课老师" />-->
-        <!--</el-form-item>-->
         <el-form-item label="授课老师" prop="teacherId">
           <el-select v-model="form.teacherId" placeholder="请选择授课老师">
             <el-option
@@ -142,14 +139,14 @@
 <script>
 import {
   createCourse,
-  updateCourse,
   deleteCourse,
+  exportCourseExcel,
   getCourse,
   getCoursePage,
-  exportCourseExcel
+  updateCourse
 } from '@/api/stucms/course'
 import ShowTeacher from '@/views/stucms/course/showTeacher'
-import { getTeacherList } from '@/api/stucms/teacher'
+import {getTeacherList} from '@/api/stucms/teacher'
 
 export default {
   name: 'Course',

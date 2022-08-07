@@ -18,6 +18,10 @@ public class StudentUpdateReqVO extends StudentBaseVO {
     @NotNull(message = "主键不能为空")
     private Long id;
 
+    @ApiModelProperty(value = "班级ID", required = true, example = "1")
+    @NotNull(message = "班级ID不能为空")
+    private Long deptId;
+
     @ApiModelProperty(value = "身份证号", required = true)
     @NotNull(message = "身份证号不能为空")
     private String sysid;
