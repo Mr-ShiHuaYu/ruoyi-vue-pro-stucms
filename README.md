@@ -32,9 +32,27 @@
 
 
 ## 系统图片演示
-![名称](https://gitee.com/vip_huage/ruoyi-vue-pro-stucms/blob/hua/screenshots/学生列表.jpg)
+- 学生列表
+![学生列表](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E5%AD%A6%E7%94%9F%E5%88%97%E8%A1%A8.jpg)
+  
+- 班级管理
+![班级管理](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E7%8F%AD%E7%BA%A7%E7%AE%A1%E7%90%86.jpg)
+  
+  
+- 老师列表
+![老师列表](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E8%80%81%E5%B8%88%E5%88%97%E8%A1%A8.jpg)
+  
 
-![名称](https://gitee.com/vip_huage/ruoyi-vue-pro-stucms/blob/hua/screenshots/总体分析.jpg)
+- 成绩管理
+![成绩管理](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E6%88%90%E7%BB%A9%E7%AE%A1%E7%90%86.jpg)
+
+
+- 个人分析
+  ![个人分析](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E4%B8%AA%E4%BA%BA%E5%88%86%E6%9E%90.jpg)
+
+  
+- 总体分析
+![总体分析](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E6%80%BB%E4%BD%93%E5%88%86%E6%9E%90.jpg)
 
 
 ## 捐赠支持
