@@ -32,6 +32,8 @@
 
 
 ## 系统图片演示
+### 管理员或老师页面
+
 - 学生列表
 ![学生列表](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E5%AD%A6%E7%94%9F%E5%88%97%E8%A1%A8.jpg)
   
@@ -54,8 +56,17 @@
 - 总体分析
 ![总体分析](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E6%80%BB%E4%BD%93%E5%88%86%E6%9E%90.jpg)
 
+### 学生页面
+- 学生-学生列表(只显示自己)
+  ![学生列表](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E5%AD%A6%E7%94%9F-%E5%AD%A6%E7%94%9F%E5%88%97%E8%A1%A8.jpg)
+  
+- 学生-个人分析(只显示自己的成绩)
+  ![学生-个人分析](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E5%AD%A6%E7%94%9F-%E5%AD%A6%E7%94%9F%E5%88%97%E8%A1%A8.jpg)
+  
+- 学生-成绩管理(只显示自己的成绩)
+  ![学生-成绩管理](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E5%AD%A6%E7%94%9F-%E6%88%90%E7%BB%A9%E7%AE%A1%E7%90%86.jpg)
+
 
 ## 捐赠支持
-
 ![名称](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/mm_facetoface.png)
 
