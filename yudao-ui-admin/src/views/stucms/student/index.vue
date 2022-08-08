@@ -3,7 +3,7 @@
 
     <el-row :gutter="20">
       <!--班级数据-->
-      <el-col :span="4" :xs="24">
+      <el-col :span="3" :xs="24">
         <div class="head-container">
           <el-input v-model="deptName" placeholder="请输入班级名称" clearable size="small" prefix-icon="el-icon-search" style="margin-bottom: 20px"/>
         </div>
@@ -14,7 +14,7 @@
       </el-col>
 
       <!--右侧学生数据-->
-      <el-col :span="20" :xs="24">
+      <el-col :span="21" :xs="24">
         <!-- 搜索工作栏 -->
         <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
           <el-form-item label="学号" prop="studentUid">
@@ -80,7 +80,7 @@
               <dict-tag :type="DICT_TYPE.SYSTEM_USER_SEX" :value="scope.row.sex"/>
             </template>
           </el-table-column>
-          <el-table-column label="身份证号" align="center" prop="sysid" min-width="100"/>
+          <el-table-column label="身份证号" align="center" prop="sysid" min-width="130"/>
           <el-table-column label="手机" align="center" prop="phone"/>
           <el-table-column label="出生日期" align="center" prop="birth"/>
           <el-table-column label="民族" align="center" prop="minzu"/>

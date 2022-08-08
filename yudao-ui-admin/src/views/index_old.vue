@@ -19,7 +19,8 @@
             icon="el-icon-cloudy"
             plain
             @click="goTarget('https://gitee.com/vip_huage/ruoyi-vue-pro-stucms')"
-            >访问码云</el-button
+          >访问码云
+          </el-button
           >
         </p>
       </el-col>
@@ -32,7 +33,7 @@
         </el-row>
         <el-row>
           <el-col :span="6">
-            <h4>后端技术</h4>
+            <h3>后端技术</h3>
             <ul>
               <li>SpringBoot</li>
               <li>Spring Security</li>
@@ -44,7 +45,7 @@
             </ul>
           </el-col>
           <el-col :span="6">
-            <h4>前端技术</h4>
+            <h3>前端技术</h3>
             <ul>
               <li>Vue</li>
               <li>Vuex</li>
@@ -57,7 +58,50 @@
         </el-row>
       </el-col>
     </el-row>
-    <el-divider />
+    <el-divider/>
+
+    <el-row :gutter="20">
+      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+        <el-card shadow="always">
+          <el-button
+            type="warning"
+            icon="el-icon-search"
+            plain
+            @click="openSearchScoreTab"
+            class="my-card-button"
+          >成绩查询
+          </el-button
+          >
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+        <el-card shadow="always">
+          <el-button
+            type="success"
+            icon="el-icon-monitor"
+            plain
+            @click="openPersonalTab"
+            class="my-card-button"
+          >个人分析
+          </el-button
+          >
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+        <el-card shadow="always">
+          <el-button
+            type="primary"
+            icon="el-icon-odometer"
+            plain
+            @click="openAllScoreTab"
+            class="my-card-button"
+          >总体分析
+          </el-button
+          >
+        </el-card>
+      </el-col>
+    </el-row>
+
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :md="12" :lg="8">
         <el-card class="update-log">
@@ -66,28 +110,15 @@
           </div>
           <div class="body">
             <p>
-              <i class="el-icon-user-solid"></i> QQ群：<s>满937441</s>
-              <s>满887144332</s> <s>满180251782</s>
-              <a href="https://jq.qq.com/?_wv=1027&k=4WWwqNxN" target="_blank"
-                > 104180207</a
-              >
-            </p>
-            <p>
-              <i class="el-icon-chat-dot-round"></i> 微信：<a
-                href="javascript:;"
-                >/ *芋道</a
-              >
-            </p>
-            <p>
-              <i class="el-icon-money"></i> 支付宝：<a
-                href="javascript:;"
-                class="支付宝信息"
-                >/ *芋道</a
+              <i class="el-icon-user-solid"></i> QQ群：
+              <a href="https://jq.qq.com/?_wv=1027&k=fe7fkVHZ" target="_blank"
+              > 316915910</a
               >
             </p>
           </div>
         </el-card>
       </el-col>
+
       <el-col :xs="24" :sm="24" :md="12" :lg="8">
         <el-card class="update-log">
           <div slot="header" class="clearfix">
@@ -107,14 +138,14 @@
           <div slot="header" class="clearfix">
             <span>捐赠支持</span>
           </div>
-          <div class="body">
+          <div class="body" style="text-align: center;">
             <img
-              src=""
+              src="https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/mm_facetoface.png"
               alt="donate"
-              width="100%"
+              height="100%"
             />
             <span style="display: inline-block; height: 30px; line-height: 30px"
-              >你可以请作者喝杯咖啡表示鼓励</span
+            >你可以请作者喝杯咖啡表示鼓励</span
             >
           </div>
         </el-card>
@@ -136,11 +167,26 @@ export default {
     goTarget(href) {
       window.open(href, "_blank");
     },
+    openSearchScoreTab() {
+      this.$tab.openPage("成绩查询", "/stucms/score/search")
+    },
+    openPersonalTab() {
+      this.$tab.openPage("个人分析", "/stucms/score/personal")
+    },
+    openAllScoreTab(){
+      this.$tab.openPage("总体分析", "/stucms/score/all")
+    }
   },
 };
 </script>
 
 <style scoped lang="scss">
+.my-card-button {
+  width: 100%;
+  height: 100px;
+  font-size: 34px;
+}
+
 .home {
   blockquote {
     padding: 10px 20px;
@@ -148,12 +194,14 @@ export default {
     font-size: 17.5px;
     border-left: 5px solid #eee;
   }
+
   hr {
     margin-top: 20px;
     margin-bottom: 20px;
     border: 0;
     border-top: 1px solid #eee;
   }
+
   .col-item {
     margin-bottom: 20px;
   }

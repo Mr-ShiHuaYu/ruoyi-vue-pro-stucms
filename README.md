@@ -27,8 +27,17 @@
 > 工作流后续考虑会添加,添加学生请假功能时使用
 
 ## 待实现功能列表
-- [ ] 学生可直接用学号登录
-- [ ] 数据权限,学生登录只看本人,老师登录可看全部学生,管理员登录可操作全部
-- [ ] 首页
+- [ ] 老师可直接使用手机号登录
+- [ ] 使用工作流实现学生请假功能
 
-##系统图片演示
+
+## 系统图片演示
+![名称](https://gitee.com/vip_huage/ruoyi-vue-pro-stucms/blob/hua/screenshots/学生列表.jpg)
+
+![名称](https://gitee.com/vip_huage/ruoyi-vue-pro-stucms/blob/hua/screenshots/总体分析.jpg)
+
+
+## 捐赠支持
+
+![名称](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/mm_facetoface.png)
+

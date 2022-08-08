@@ -54,7 +54,13 @@ export default {
   closeOtherPage(obj) {
     return store.dispatch('tagsView/delOthersViews', obj || router.currentRoute);
   },
-  // 添加tab页签
+  /**
+   * 添加tab页签
+   * @param title 标签标题
+   * @param url 浏览器的地址
+   * @param params 浏览器的地址后面携带的查询参数
+   * @returns {Promise<Route>}
+   */
   openPage(title, url, params) {
     var obj = { path: url, meta: { title: title } }
     store.dispatch('tagsView/addView', obj);
