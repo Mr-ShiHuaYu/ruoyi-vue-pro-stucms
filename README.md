@@ -31,6 +31,10 @@
 - [ ] 使用工作流实现学生请假功能
 
 
+## QQ交流群
+316915910(验证口令:stucms)
+
+
 ## 系统图片演示
 ### 管理员或老师页面
 
@@ -65,7 +69,6 @@
   
 - 学生-成绩管理(只显示自己的成绩)
   ![学生-成绩管理](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/%E5%AD%A6%E7%94%9F-%E6%88%90%E7%BB%A9%E7%AE%A1%E7%90%86.jpg)
-
 
 ## 捐赠支持
 ![名称](https://hua-imgs.oss-cn-hangzhou.aliyuncs.com/img/mm_facetoface.png)
