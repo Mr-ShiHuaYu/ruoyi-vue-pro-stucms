@@ -9,7 +9,7 @@
       <div class="field">
         <!-- [移动端]标题 -->
         <h2 class="mobile-title">
-          <h3 class="title">芋道后台管理系统</h3>
+          <h3 class="title">学生管理系统</h3>
         </h2>
 
         <!-- 表单 -->
@@ -110,11 +110,17 @@ import {SystemUserSocialTypeEnum} from "@/utils/constants";
 import {getTenantEnable} from "@/utils/ruoyi";
 import {
   getPassword,
-  getRememberMe, getTenantName,
+  getRememberMe,
+  getTenantName,
   getUsername,
-  removePassword, removeRememberMe, removeTenantName,
+  removePassword,
+  removeRememberMe,
+  removeTenantName,
   removeUsername,
-  setPassword, setRememberMe, setTenantId, setTenantName,
+  setPassword,
+  setRememberMe,
+  setTenantId,
+  setTenantName,
   setUsername
 } from "@/utils/auth";
 
@@ -263,8 +269,8 @@ export default {
       this.loading = true;
       // 计算 redirectUri
       const redirectUri = location.origin + '/social-login?type=' + socialTypeEnum.type + '&redirect=' + (this.redirect || "/"); // 重定向不能丢
-      // const redirectUri = 'http://127.0.0.1:48080/api/gitee/callback';
-      // const redirectUri = 'http://127.0.0.1:48080/api/dingtalk/callback';
+      // const redirectUri = 'http://127.0.0.1:41206/api/gitee/callback';
+      // const redirectUri = 'http://127.0.0.1:41206/api/dingtalk/callback';
       // 进行跳转
       socialAuthRedirect(socialTypeEnum.type, encodeURIComponent(redirectUri)).then((res) => {
         // console.log(res.url);

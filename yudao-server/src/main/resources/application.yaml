@@ -1,6 +1,6 @@
 spring:
   application:
-    name: yudao-server
+    name: stucms-server
   profiles:
     active: local
 
@@ -16,7 +16,7 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER # 解决 SpringFox 与 SpringBoot 2.6.x 不兼容的问题，参见 SpringFoxHandlerProviderBeanPostProcessor 类
-    static-path-pattern: /static/** # /resources/static 目录下的静态资源
+#    static-path-pattern: /static/** # /resources/static 目录下的静态资源,添加会导致接口文档不能用
 
   # Jackson 配置项
   jackson:
@@ -61,7 +61,7 @@ mybatis-plus:
 
 yudao:
   info:
-    version: 1.0.0
+    version: 0.1.0
     base-package: cn.iocoder.yudao
   web:
     admin-ui:
@@ -69,7 +69,6 @@ yudao:
   security:
     permit-all_urls:
       - /admin-ui/** # /resources/admin-ui 目录下的静态资源
-      - /static/** # /resources/static 目录下的静态资源
   swagger:
     title: 管理后台
     description: 提供管理员管理的所有功能
@@ -84,10 +83,7 @@ yudao:
     db-schemas: ${spring.datasource.dynamic.datasource.master.name}
   error-code: # 错误码相关配置项
     constants-class-list:
-#      - cn.iocoder.yudao.module.bpm.enums.ErrorCodeConstants
       - cn.iocoder.yudao.module.infra.enums.ErrorCodeConstants
-#      - cn.iocoder.yudao.module.member.enums.ErrorCodeConstants
-#      - cn.iocoder.yudao.module.pay.enums.ErrorCodeConstants
       - cn.iocoder.yudao.module.system.enums.ErrorCodeConstants
       - cn.iocoder.yudao.module.stucms.enums.ErrorCodeConstants
   tenant: # 多租户相关配置项
@@ -97,9 +93,6 @@ yudao:
       - /admin-api/system/captcha/get-image # 获取图片验证码，和租户无关
       - /admin-api/infra/file/*/get/** # 获取图片，和租户无关
       - /admin-api/system/sms/callback/* # 短信回调接口，无法带上租户编号
-      - /app-api/pay/order/notify/* # 支付回调通知，不携带租户编号
-#      - /jmreport/list
-      - /jmreport/*
     ignore-tables:
       - system_tenant
       - system_tenant_package
@@ -123,22 +116,11 @@ yudao:
       - infra_job_log
       - infra_job_log
       - infra_data_source_config
-      - jimu_dict
-      - jimu_dict_item
-      - jimu_report
-      - jimu_report_data_source
-      - jimu_report_db
-      - jimu_report_db_field
-      - jimu_report_db_param
-      - jimu_report_link
-      - jimu_report_map
-      - jimu_report_share
-      - rep_demo_dxtj
-      - rep_demo_employee
-      - rep_demo_gongsi
-      - rep_demo_jianpiao
-      - tmp_report_data_1
-      - tmp_report_data_income
+      - stucms_course
+      - stucms_exam
+      - stucms_score
+      - stucms_student
+      - stucms_teacher
   sms-code: # 短信验证码相关的配置项
     expire-times: 10m
     send-frequency: 1m
@@ -147,8 +129,3 @@ yudao:
     end-code: 9999 # 这里配置 9999 的原因是，测试方便。
 
 debug: false
-
-#积木报表配置
-minidao :
-  base-package: org.jeecg.modules.jmreport.desreport.dao*
-  db-type: mysql

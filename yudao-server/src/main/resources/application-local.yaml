@@ -1,5 +1,5 @@
 server:
-  port: 48080
+  port: 41206
 
 --- #################### 数据库相关配置 ####################
 
@@ -45,28 +45,15 @@ spring:
       primary: master
       datasource:
         master:
-          name: ruoyi-vue-pro
-          url: jdbc:mysql://127.0.0.1:3306/${spring.datasource.dynamic.datasource.master.name}?allowMultiQueries=true&useUnicode=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&nullCatalogMeansCurrent=true # MySQL Connector/J 8.X 连接的示例
-#          url: jdbc:mysql://127.0.0.1:3306/${spring.datasource.dynamic.datasource.master.name}?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=CTT # MySQL Connector/J 5.X 连接的示例
-#          url: jdbc:postgresql://127.0.0.1:5432/${spring.datasource.dynamic.datasource.slave.name} # PostgreSQL 连接的示例
-#          url: jdbc:oracle:thin:@127.0.0.1:1521:xe # Oracle 连接的示例
-#          url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=${spring.datasource.dynamic.datasource.master.name} # SQLServer 连接的示例
+          name: ruoyi-vue-pro-stucms
+          url: jdbc:mysql://127.0.0.1:3306/${spring.datasource.dynamic.datasource.master.name}?allowMultiQueries=true&useUnicode=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&nullCatalogMeansCurrent=true # MySQL Connector/J 5.7/8.X 连接的示例
           username: root
           password: root
-#          username: sa
-#          password: JSm:g(*%lU4ZAkz06cd52KqT3)i1?H7W
         slave: # 模拟从库，可根据自己需要修改
-          name: ruoyi-vue-pro
-          url: jdbc:mysql://127.0.0.1:3306/${spring.datasource.dynamic.datasource.slave.name}?allowMultiQueries=true&useUnicode=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&nullCatalogMeansCurrent=true # MySQL Connector/J 8.X 连接的示例
-#          url: jdbc:mysql://127.0.0.1:3306/${spring.datasource.dynamic.datasource.slave.name}?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=CTT # MySQL Connector/J 5.X 连接的示例
-#          url: jdbc:postgresql://127.0.0.1:5432/${spring.datasource.dynamic.datasource.slave.name} # PostgreSQL 连接的示例
-#          url: jdbc:oracle:thin:@127.0.0.1:1521:xe # Oracle 连接的示例
-#          url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=${spring.datasource.dynamic.datasource.slave.name} # SQLServer 连接的示例
+          name: ruoyi-vue-pro-stucms
+          url: jdbc:mysql://127.0.0.1:3306/${spring.datasource.dynamic.datasource.slave.name}?allowMultiQueries=true&useUnicode=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&nullCatalogMeansCurrent=true
           username: root
           password: root
-  #          username: sa
-#          password: JSm:g(*%lU4ZAkz06cd52KqT3)i1?H7W
-
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
   redis:
     host: 127.0.0.1 # 地址
@@ -170,10 +157,8 @@ logging:
     # 配置自己写的 MyBatis Mapper 打印日志
 #    cn.iocoder.yudao.module.bpm.dal.mysql: debug
 #    cn.iocoder.yudao.module.infra.dal.mysql: debug
-#    cn.iocoder.yudao.module.pay.dal.mysql: debug
 #    cn.iocoder.yudao.module.system.dal.mysql: debug
 #    cn.iocoder.yudao.module.tool.dal.mysql: debug
-#    cn.iocoder.yudao.module.member.dal.mysql: debug
 
 --- #################### 微信公众号、小程序相关配置 ####################
 wx:

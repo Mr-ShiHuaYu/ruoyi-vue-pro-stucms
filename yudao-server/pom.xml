@@ -43,36 +43,6 @@
             <artifactId>yudao-module-stucms-biz</artifactId>
             <version>${revision}</version>
         </dependency>
-
-        <!--<dependency>-->
-        <!--    <groupId>cn.iocoder.boot</groupId>-->
-        <!--    <artifactId>yudao-module-member-biz</artifactId>-->
-        <!--    <version>${revision}</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--    <groupId>cn.iocoder.boot</groupId>-->
-        <!--    <artifactId>yudao-module-pay-biz</artifactId>-->
-        <!--    <version>${revision}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--    &lt;!&ndash;营销相关功能&ndash;&gt;-->
-        <!--    <groupId>cn.iocoder.boot</groupId>-->
-        <!--    <artifactId>yudao-module-market-biz</artifactId>-->
-        <!--    <version>${revision}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--    &lt;!&ndash;商品相关功能&ndash;&gt;-->
-        <!--    <groupId>cn.iocoder.boot</groupId>-->
-        <!--    <artifactId>yudao-module-product-biz</artifactId>-->
-        <!--    <version>${revision}</version>-->
-        <!--</dependency>-->
-        <!-- 数据报表 -->
-        <!--<dependency>-->
-        <!--    <groupId>cn.iocoder.boot</groupId>-->
-        <!--    <artifactId>yudao-module-visualization-biz</artifactId>-->
-        <!--    <version>${revision}</version>-->
-        <!--</dependency>-->
         <!-- 工作流 -->
         <!--        <dependency>-->
         <!--            <groupId>cn.iocoder.boot</groupId>-->

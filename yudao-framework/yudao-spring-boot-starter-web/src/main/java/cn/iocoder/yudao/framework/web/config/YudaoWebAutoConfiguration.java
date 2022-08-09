@@ -40,8 +40,8 @@ public class YudaoWebAutoConfiguration implements WebMvcConfigurer {
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
-        configurePathMatch(configurer, webProperties.getAdminApi());
-        configurePathMatch(configurer, webProperties.getAppApi());
+        this.configurePathMatch(configurer, this.webProperties.getAdminApi());
+        this.configurePathMatch(configurer, this.webProperties.getAppApi());
     }
 
     /**
@@ -58,7 +58,7 @@ public class YudaoWebAutoConfiguration implements WebMvcConfigurer {
 
     @Bean
     public GlobalExceptionHandler globalExceptionHandler(ApiErrorLogFrameworkService ApiErrorLogFrameworkService) {
-        return new GlobalExceptionHandler(applicationName, ApiErrorLogFrameworkService);
+        return new GlobalExceptionHandler(this.applicationName, ApiErrorLogFrameworkService);
     }
 
     @Bean
@@ -123,4 +123,9 @@ public class YudaoWebAutoConfiguration implements WebMvcConfigurer {
         return bean;
     }
 
+    // @Override
+    // public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    //     registry.addResourceHandler("doc.html").addResourceLocations("classpath:/META-INF/resources/");
+    //     registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+    // }
 }
