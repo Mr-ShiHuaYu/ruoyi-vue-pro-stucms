@@ -65,7 +65,7 @@ export default {
       if (!this.chalk) {
         // const url = `https://unpkg.com/element-ui@${version}/lib/theme-chalk/index.css`
         // 自己改的,将需要网络请求css文件,改为访问本地服务器
-        const url = process.env.VUE_APP_BASE_API + `/static/index.css`
+        const url = process.env.VUE_APP_BASE_API + `/index.css`
         await this.getCSSString(url, 'chalk')
       }
 
