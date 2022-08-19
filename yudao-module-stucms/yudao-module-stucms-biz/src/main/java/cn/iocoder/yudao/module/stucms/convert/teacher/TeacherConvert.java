@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.stucms.convert.teacher;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.stucms.api.teacher.dto.TeacherRespDTO;
 import cn.iocoder.yudao.module.stucms.controller.admin.teacher.vo.*;
 import cn.iocoder.yudao.module.stucms.dal.dataobject.teacher.TeacherDO;
 import org.mapstruct.Mapper;
@@ -31,4 +32,5 @@ public interface TeacherConvert {
 
     List<TeacherExcelVO> convertList02(List<TeacherDO> list);
 
+    TeacherRespDTO convertDTO(TeacherDO teacherDO);
 }

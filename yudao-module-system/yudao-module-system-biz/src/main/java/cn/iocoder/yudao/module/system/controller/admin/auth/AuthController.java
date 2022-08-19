@@ -59,6 +59,7 @@ public class AuthController {
     @Resource
     private SecurityProperties securityProperties;
 
+
     @PostMapping("/login")
     @PermitAll
     @ApiOperation("使用账号密码登录")
@@ -101,8 +102,8 @@ public class AuthController {
         List<RoleDO> roleList = roleService.getRolesFromCache(roleIds);
         // 获得菜单列表
         List<MenuDO> menuList = permissionService.getRoleMenuListFromCache(roleIds,
-                SetUtils.asSet(MenuTypeEnum.DIR.getType(), MenuTypeEnum.MENU.getType(), MenuTypeEnum.BUTTON.getType()),
-                singleton(CommonStatusEnum.ENABLE.getStatus())); // 只要开启的
+            SetUtils.asSet(MenuTypeEnum.DIR.getType(), MenuTypeEnum.MENU.getType(), MenuTypeEnum.BUTTON.getType()),
+            singleton(CommonStatusEnum.ENABLE.getStatus())); // 只要开启的
         // 拼接结果返回
         return success(AuthConvert.INSTANCE.convert(user, roleList, menuList));
     }
@@ -114,8 +115,8 @@ public class AuthController {
         Set<Long> roleIds = permissionService.getUserRoleIdsFromCache(getLoginUserId(), singleton(CommonStatusEnum.ENABLE.getStatus()));
         // 获得用户拥有的菜单列表
         List<MenuDO> menuList = permissionService.getRoleMenuListFromCache(roleIds,
-                SetUtils.asSet(MenuTypeEnum.DIR.getType(), MenuTypeEnum.MENU.getType()), // 只要目录和菜单类型
-                singleton(CommonStatusEnum.ENABLE.getStatus())); // 只要开启的
+            SetUtils.asSet(MenuTypeEnum.DIR.getType(), MenuTypeEnum.MENU.getType()), // 只要目录和菜单类型
+            singleton(CommonStatusEnum.ENABLE.getStatus())); // 只要开启的
         // 转换成 Tree 结构返回
         return success(AuthConvert.INSTANCE.buildMenuTree(menuList));
     }
@@ -145,11 +146,11 @@ public class AuthController {
     @PermitAll
     @ApiOperation("社交授权的跳转")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "type", value = "社交类型", required = true, dataTypeClass = Integer.class),
-            @ApiImplicitParam(name = "redirectUri", value = "回调路径", dataTypeClass = String.class)
+        @ApiImplicitParam(name = "type", value = "社交类型", required = true, dataTypeClass = Integer.class),
+        @ApiImplicitParam(name = "redirectUri", value = "回调路径", dataTypeClass = String.class)
     })
     public CommonResult<String> socialLogin(@RequestParam("type") Integer type,
-                                                    @RequestParam("redirectUri") String redirectUri) {
+                                            @RequestParam("redirectUri") String redirectUri) {
         return CommonResult.success(socialUserService.getAuthorizeUrl(type, redirectUri));
     }
 

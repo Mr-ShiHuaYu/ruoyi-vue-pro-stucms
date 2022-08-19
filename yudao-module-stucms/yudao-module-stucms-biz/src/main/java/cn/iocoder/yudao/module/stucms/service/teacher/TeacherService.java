@@ -73,4 +73,6 @@ public interface TeacherService {
     List<TeacherDO> getTeacherList(TeacherExportReqVO exportReqVO);
 
     List<TeacherDO> getSimpleTeachers();
+
+    TeacherDO getTeacherByPhone(String phone);
 }

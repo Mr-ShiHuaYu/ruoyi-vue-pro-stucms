@@ -8,6 +8,8 @@ import cn.iocoder.yudao.framework.common.util.servlet.ServletUtils;
 import cn.iocoder.yudao.framework.common.util.validation.ValidationUtils;
 import cn.iocoder.yudao.module.stucms.api.student.StudentApi;
 import cn.iocoder.yudao.module.stucms.api.student.dto.StudentRespDTO;
+import cn.iocoder.yudao.module.stucms.api.teacher.TeacherApi;
+import cn.iocoder.yudao.module.stucms.api.teacher.dto.TeacherRespDTO;
 import cn.iocoder.yudao.module.system.api.logger.dto.LoginLogCreateReqDTO;
 import cn.iocoder.yudao.module.system.api.sms.SmsCodeApi;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialUserBindReqDTO;
@@ -74,6 +76,9 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     @Resource
     private StudentApi studentApi;
 
+    @Resource
+    private TeacherApi teacherApi;
+
     @Value("${sys.user.init-password:123456}")
     private String userInitPassword; // 配置中心中设置的默认密码
 
@@ -82,6 +87,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     @Resource
     private RoleService roleService;
+
     @Override
     public AdminUserDO authenticate(String username, String password) {
         final LoginLogTypeEnum logTypeEnum = LoginLogTypeEnum.LOGIN_USERNAME;
@@ -91,6 +97,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             // 如果没有用户,学生学号可以直接创建用户,并登录成功
             // 1.查找学号为username的学生是否存在
             StudentRespDTO studentRespDTO = this.studentApi.getStudentByUid(username);
+
             if (studentRespDTO != null) {
                 // 2.如果存在,则新建用户
                 UserCreateReqVO userReqVO = new UserCreateReqVO();
@@ -109,7 +116,24 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 throw exception(AUTH_LOGIN_USER_CREATED, userReqVO.getUsername(), userReqVO.getPassword());
             }
             // TODO 判断是不是老师,老师使用手机号登录
-
+            TeacherRespDTO teacherDTO = this.teacherApi.getTeacherByPhone(username);// 这里的username就是老师的phone
+            if (teacherDTO != null) {
+                // 老师存在，但没有用户，要在用户表中新建老师，用户名是手机号，密码为设置中的初始密码
+                UserCreateReqVO userReqVO = new UserCreateReqVO();
+                userReqVO.setPassword(this.userInitPassword); // 设置密码默认
+                userReqVO.setUsername(teacherDTO.getPhone()); // 用户名为手机号
+                userReqVO.setNickname(teacherDTO.getName()); // 昵称是姓名,用于显示
+                userReqVO.setDeptId(null); // 设置班级
+                userReqVO.setPostIds(Sets.newHashSet()); // 默认班委为空
+                userReqVO.setSex(Integer.valueOf(teacherDTO.getSex()));
+                Long userId = this.userService.createUser(userReqVO);
+                // 给这个用户添加老师角色
+                // 获取老师角色的id
+                Set<Long> roleId = this.roleService.getRoleIdByCode("teacher");
+                this.permissionService.assignUserRole(userId, roleId);
+                // 抛出异常,提示让重新登录
+                throw exception(AUTH_LOGIN_USER_CREATED, userReqVO.getUsername(), userReqVO.getPassword());
+            }
             this.createLoginLog(null, username, logTypeEnum, LoginResultEnum.BAD_CREDENTIALS);
             throw exception(AUTH_LOGIN_BAD_CREDENTIALS);
         }

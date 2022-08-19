@@ -30,12 +30,15 @@ public interface TeacherMapper extends BaseMapperX<TeacherDO> {
 
     default List<TeacherDO> selectList(TeacherExportReqVO reqVO) {
         return selectList(new LambdaQueryWrapperX<TeacherDO>()
-                .likeIfPresent(TeacherDO::getName, reqVO.getName())
-                .likeIfPresent(TeacherDO::getPhone, reqVO.getPhone())
-                .eqIfPresent(TeacherDO::getSex, reqVO.getSex())
-                .likeIfPresent(TeacherDO::getQq, reqVO.getQq())
-                .betweenIfPresent(TeacherDO::getCreateTime, reqVO.getCreateTime())
-                .orderByDesc(TeacherDO::getTeacherId));
+            .likeIfPresent(TeacherDO::getName, reqVO.getName())
+            .likeIfPresent(TeacherDO::getPhone, reqVO.getPhone())
+            .eqIfPresent(TeacherDO::getSex, reqVO.getSex())
+            .likeIfPresent(TeacherDO::getQq, reqVO.getQq())
+            .betweenIfPresent(TeacherDO::getCreateTime, reqVO.getCreateTime())
+            .orderByDesc(TeacherDO::getTeacherId));
     }
 
+    default TeacherDO selectOneByPhone(String phone) {
+        return selectOne(TeacherDO::getPhone, phone);
+    }
 }

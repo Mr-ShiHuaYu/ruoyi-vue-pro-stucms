@@ -88,4 +88,9 @@ public class TeacherServiceImpl implements TeacherService {
         return teacherMapper.selectList();
     }
 
+    @Override
+    public TeacherDO getTeacherByPhone(String phone) {
+        return teacherMapper.selectOneByPhone(phone);
+    }
+
 }
