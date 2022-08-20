@@ -17,8 +17,6 @@
           <el-tabs class="form" v-model="loginForm.loginType" style=" float:none;">
             <el-tab-pane label="账号密码登录" name="uname">
             </el-tab-pane>
-            <el-tab-pane label="短信验证码登录" name="sms">
-            </el-tab-pane>
           </el-tabs>
           <div>
             <el-form ref="loginForm" :model="loginForm" :rules="LoginRules" class="login-form">
@@ -28,7 +26,7 @@
                 </el-input>
               </el-form-item>
               <!-- 账号密码登录 -->
-              <div v-if="loginForm.loginType === 'uname'">
+              <div>
                 <el-form-item prop="username">
                   <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
                     <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon"/>
@@ -51,28 +49,6 @@
                 </el-form-item>
                 <el-checkbox v-model="loginForm.rememberMe" style="margin:0 0 25px 0;">记住密码</el-checkbox>
               </div>
-
-              <!-- 短信验证码登录 -->
-              <div v-if="loginForm.loginType === 'sms'">
-                <el-form-item prop="mobile">
-                  <el-input v-model="loginForm.mobile" type="text" auto-complete="off" placeholder="请输入手机号">
-                    <svg-icon slot="prefix" icon-class="phone" class="el-input__icon input-icon"/>
-                  </el-input>
-                </el-form-item>
-                <el-form-item prop="mobileCode">
-                  <el-input v-model="loginForm.mobileCode" type="text" auto-complete="off" placeholder="短信验证码"
-                            @keyup.enter.native="handleLogin">
-                    <template slot="icon">
-                      <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon"/>
-                    </template>
-                    <template slot="append">
-                      <span v-if="mobileCodeTimer <= 0" class="getMobileCode" @click="getSmsCode" style="cursor: pointer;">获取验证码</span>
-                      <span v-if="mobileCodeTimer > 0" class="getMobileCode">{{ mobileCodeTimer }}秒后可重新获取</span>
-                    </template>
-                  </el-input>
-                </el-form-item>
-              </div>
-
               <!-- 下方的登录按钮 -->
               <el-form-item style="width:100%;">
                 <el-button :loading="loading" size="medium" type="primary" style="width:100%;"
@@ -80,16 +56,6 @@
                   <span v-if="!loading">登 录</span>
                   <span v-else>登 录 中...</span>
                 </el-button>
-              </el-form-item>
-
-              <!--  社交登录 -->
-             <el-form-item style="width:100%;">
-                  <div class="oauth-login" style="display:flex">
-                    <div class="oauth-login-item" v-for="item in SysUserSocialTypeEnum" :key="item.type" @click="doSocialLogin(item)">
-                      <img :src="item.img" height="25px" width="25px" alt="登录" >
-                      <span>{{item.title}}</span>
-                    </div>
-                </div>
               </el-form-item>
             </el-form>
           </div>
@@ -254,7 +220,7 @@ export default {
           }
           // 发起登陆
           // console.log("发起登录", this.loginForm);
-          this.$store.dispatch(this.loginForm.loginType === "sms" ? "SmsLogin" : "Login", this.loginForm).then(() => {
+          this.$store.dispatch("Login", this.loginForm).then(() => {
             this.$router.push({path: this.redirect || "/"}).catch(() => {
             });
           }).catch(() => {
@@ -264,36 +230,6 @@ export default {
         }
       });
     },
-    doSocialLogin(socialTypeEnum) {
-      // 设置登录中
-      this.loading = true;
-      // 计算 redirectUri
-      const redirectUri = location.origin + '/social-login?type=' + socialTypeEnum.type + '&redirect=' + (this.redirect || "/"); // 重定向不能丢
-      // const redirectUri = 'http://127.0.0.1:41206/api/gitee/callback';
-      // const redirectUri = 'http://127.0.0.1:41206/api/dingtalk/callback';
-      // 进行跳转
-      socialAuthRedirect(socialTypeEnum.type, encodeURIComponent(redirectUri)).then((res) => {
-        // console.log(res.url);
-        window.location.href = res.data;
-      });
-    },
-    /** ========== 以下为升级短信登录 ========== */
-    getSmsCode() {
-      if (this.mobileCodeTimer > 0) return;
-      this.$refs.loginForm.validate(valid => {
-        if (!valid) return;
-        sendSmsCode(this.loginForm.mobile, this.scene, this.loginForm.uuid, this.loginForm.code).then(res => {
-          this.$modal.msgSuccess("获取验证码成功")
-          this.mobileCodeTimer = 60;
-          let msgTimer = setInterval(() => {
-            this.mobileCodeTimer = this.mobileCodeTimer - 1;
-            if (this.mobileCodeTimer <= 0) {
-              clearInterval(msgTimer);
-            }
-          }, 1000);
-        });
-      });
-    }
   }
 };
 </script>

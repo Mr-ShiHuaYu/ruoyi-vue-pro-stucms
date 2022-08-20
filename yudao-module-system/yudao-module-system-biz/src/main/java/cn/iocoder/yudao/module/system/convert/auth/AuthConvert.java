@@ -1,9 +1,6 @@
 package cn.iocoder.yudao.module.system.convert.auth;
 
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
-import cn.iocoder.yudao.module.system.api.sms.dto.code.SmsCodeSendReqDTO;
-import cn.iocoder.yudao.module.system.api.sms.dto.code.SmsCodeUseReqDTO;
-import cn.iocoder.yudao.module.system.api.social.dto.SocialUserBindReqDTO;
 import cn.iocoder.yudao.module.system.controller.admin.auth.vo.*;
 import cn.iocoder.yudao.module.system.dal.dataobject.oauth2.OAuth2AccessTokenDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.permission.MenuDO;
@@ -64,11 +61,4 @@ public interface AuthConvert {
         // 获得到所有的根节点
         return CollectionUtils.filterList(treeNodeMap.values(), node -> MenuIdEnum.ROOT.getId().equals(node.getParentId()));
     }
-
-    SocialUserBindReqDTO convert(Long userId, Integer userType, AuthSocialLoginReqVO reqVO);
-
-    SmsCodeSendReqDTO convert(AuthSmsSendReqVO reqVO);
-
-    SmsCodeUseReqDTO convert(AuthSmsLoginReqVO reqVO, Integer scene, String usedIp);
-
 }

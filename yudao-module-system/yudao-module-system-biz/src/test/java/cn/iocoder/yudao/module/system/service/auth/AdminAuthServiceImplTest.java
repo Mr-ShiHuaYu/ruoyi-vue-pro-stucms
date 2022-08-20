@@ -4,7 +4,6 @@ import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.enums.UserTypeEnum;
 import cn.iocoder.yudao.framework.test.core.ut.BaseDbUnitTest;
 import cn.iocoder.yudao.framework.test.core.util.AssertUtils;
-import cn.iocoder.yudao.module.system.api.sms.SmsCodeApi;
 import cn.iocoder.yudao.module.system.controller.admin.auth.vo.AuthLoginReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.auth.vo.AuthLoginRespVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.oauth2.OAuth2AccessTokenDO;
@@ -15,7 +14,6 @@ import cn.iocoder.yudao.module.system.service.common.CaptchaService;
 import cn.iocoder.yudao.module.system.service.logger.LoginLogService;
 import cn.iocoder.yudao.module.system.service.member.MemberService;
 import cn.iocoder.yudao.module.system.service.oauth2.OAuth2TokenService;
-import cn.iocoder.yudao.module.system.service.social.SocialUserService;
 import cn.iocoder.yudao.module.system.service.user.AdminUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,10 +43,7 @@ public class AdminAuthServiceImplTest extends BaseDbUnitTest {
     private CaptchaService captchaService;
     @MockBean
     private LoginLogService loginLogService;
-    @MockBean
-    private SocialUserService socialService;
-    @MockBean
-    private SmsCodeApi smsCodeApi;
+
     @MockBean
     private OAuth2TokenService oauth2TokenService;
     @MockBean

@@ -49,3 +49,4 @@ rebel.xml
 application-my.yaml
 
 /yudao-ui-app/unpackage/
+/yudao-server/src/main/resources/application-prod.yaml

@@ -11,9 +11,8 @@ import cn.iocoder.yudao.module.stucms.api.student.dto.StudentRespDTO;
 import cn.iocoder.yudao.module.stucms.api.teacher.TeacherApi;
 import cn.iocoder.yudao.module.stucms.api.teacher.dto.TeacherRespDTO;
 import cn.iocoder.yudao.module.system.api.logger.dto.LoginLogCreateReqDTO;
-import cn.iocoder.yudao.module.system.api.sms.SmsCodeApi;
-import cn.iocoder.yudao.module.system.api.social.dto.SocialUserBindReqDTO;
-import cn.iocoder.yudao.module.system.controller.admin.auth.vo.*;
+import cn.iocoder.yudao.module.system.controller.admin.auth.vo.AuthLoginReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.auth.vo.AuthLoginRespVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserCreateReqVO;
 import cn.iocoder.yudao.module.system.convert.auth.AuthConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.oauth2.OAuth2AccessTokenDO;
@@ -21,14 +20,12 @@ import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 import cn.iocoder.yudao.module.system.enums.logger.LoginLogTypeEnum;
 import cn.iocoder.yudao.module.system.enums.logger.LoginResultEnum;
 import cn.iocoder.yudao.module.system.enums.oauth2.OAuth2ClientConstants;
-import cn.iocoder.yudao.module.system.enums.sms.SmsSceneEnum;
 import cn.iocoder.yudao.module.system.service.common.CaptchaService;
 import cn.iocoder.yudao.module.system.service.logger.LoginLogService;
 import cn.iocoder.yudao.module.system.service.member.MemberService;
 import cn.iocoder.yudao.module.system.service.oauth2.OAuth2TokenService;
 import cn.iocoder.yudao.module.system.service.permission.PermissionService;
 import cn.iocoder.yudao.module.system.service.permission.RoleService;
-import cn.iocoder.yudao.module.system.service.social.SocialUserService;
 import cn.iocoder.yudao.module.system.service.user.AdminUserService;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
@@ -42,7 +39,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.servlet.ServletUtils.getClientIP;
 import static cn.iocoder.yudao.module.system.enums.ErrorCodeConstants.*;
 
 /**
@@ -62,16 +58,12 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private LoginLogService loginLogService;
     @Resource
     private OAuth2TokenService oauth2TokenService;
-    @Resource
-    private SocialUserService socialUserService;
+
     @Resource
     private MemberService memberService;
 
     @Resource
     private Validator validator;
-
-    @Resource
-    private SmsCodeApi smsCodeApi;
 
     @Resource
     private StudentApi studentApi;
@@ -157,39 +149,8 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         // 使用账号密码，进行登录
         AdminUserDO user = this.authenticate(reqVO.getUsername(), reqVO.getPassword());
 
-        // 如果 socialType 非空，说明需要绑定社交用户
-        if (reqVO.getSocialType() != null) {
-            this.socialUserService.bindSocialUser(new SocialUserBindReqDTO(user.getId(), this.getUserType().getValue(),
-                reqVO.getSocialType(), reqVO.getSocialCode(), reqVO.getSocialState()));
-        }
-
         // 创建 Token 令牌，记录登录日志
         return this.createTokenAfterLoginSuccess(user.getId(), reqVO.getUsername(), LoginLogTypeEnum.LOGIN_USERNAME);
-    }
-
-    @Override
-    public void sendSmsCode(AuthSmsSendReqVO reqVO) {
-        // 登录场景，验证是否存在
-        if (this.userService.getUserByMobile(reqVO.getMobile()) == null) {
-            throw exception(AUTH_MOBILE_NOT_EXISTS);
-        }
-        // 发送验证码
-        this.smsCodeApi.sendSmsCode(AuthConvert.INSTANCE.convert(reqVO).setCreateIp(getClientIP()));
-    }
-
-    @Override
-    public AuthLoginRespVO smsLogin(AuthSmsLoginReqVO reqVO) {
-        // 校验验证码
-        this.smsCodeApi.useSmsCode(AuthConvert.INSTANCE.convert(reqVO, SmsSceneEnum.ADMIN_MEMBER_LOGIN.getScene(), getClientIP()));
-
-        // 获得用户信息
-        AdminUserDO user = this.userService.getUserByMobile(reqVO.getMobile());
-        if (user == null) {
-            throw exception(USER_NOT_EXISTS);
-        }
-
-        // 创建 Token 令牌，记录登录日志
-        return this.createTokenAfterLoginSuccess(user.getId(), reqVO.getMobile(), LoginLogTypeEnum.LOGIN_MOBILE);
     }
 
     @VisibleForTesting
@@ -235,25 +196,6 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         if (userId != null && Objects.equals(LoginResultEnum.SUCCESS.getResult(), loginResult.getResult())) {
             this.userService.updateUserLogin(userId, ServletUtils.getClientIP());
         }
-    }
-
-    @Override
-    public AuthLoginRespVO socialLogin(AuthSocialLoginReqVO reqVO) {
-        // 使用 code 授权码，进行登录。然后，获得到绑定的用户编号
-        Long userId = this.socialUserService.getBindUserId(UserTypeEnum.ADMIN.getValue(), reqVO.getType(),
-            reqVO.getCode(), reqVO.getState());
-        if (userId == null) {
-            throw exception(AUTH_THIRD_LOGIN_NOT_BIND);
-        }
-
-        // 获得用户
-        AdminUserDO user = this.userService.getUser(userId);
-        if (user == null) {
-            throw exception(USER_NOT_EXISTS);
-        }
-
-        // 创建 Token 令牌，记录登录日志
-        return this.createTokenAfterLoginSuccess(user.getId(), user.getUsername(), LoginLogTypeEnum.LOGIN_SOCIAL);
     }
 
     @Override

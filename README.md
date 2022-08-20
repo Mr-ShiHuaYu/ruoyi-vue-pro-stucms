@@ -8,7 +8,22 @@
 * 快速启动必读: <https://doc.iocoder.cn/quick-start/>
 
 * 项目原型是我原来使用Php Laravel开发的,地址:<https://gitee.com/vip_huage/StudentCMS>
-  
+
+* Mysql的[mysqld] 配置中需要加上
+>
+> sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+
+## 系统演示地址
+> 演示模式下不允许添加，修改，删除数据
+>
+http://jstu.yushihua.vip
+
+管理员： admin    123456
+
+老师：  teacher   123456
+
+学生：  student   123456
+
 ## 本项目技术栈
 * 后端采用 Spring Boot、MySQL + MyBatis Plus、Redis + Redisson
 * 数据库可使用 MySQL、Oracle、PostgreSQL、SQL Server、MariaDB、国产达梦 DM、TiDB 等
@@ -29,6 +44,9 @@
 ## 待实现功能列表
 - [x] 老师可直接使用手机号登录
 - [ ] 使用工作流实现学生请假功能
+- [ ] 学生和老师不允许修改学生的学号
+- [ ] 老师不允许修改老师的手机号
+- [ ] 管理员修改学生学号或老师的手机号后，同步修改用户表中的值
 
 
 ## QQ交流群
