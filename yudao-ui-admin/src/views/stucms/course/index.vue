@@ -59,8 +59,12 @@
 
     <!-- 列表 -->
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
-      <!--<el-table-column label="主键" align="center" prop="courseId" />-->
-      <el-table-column v-hasPermi="['stucms:course:delete']" type="selection" width="55" align="center"/>
+      <el-table-column
+        type="selection"
+        width="55"
+        align="center"
+        v-if="checkPermi(['stucms:course:delete'])"
+      />
       <el-table-column label="序号" type="index" align="center"/>
 
       <el-table-column label="名称" align="center" prop="courseName"/>

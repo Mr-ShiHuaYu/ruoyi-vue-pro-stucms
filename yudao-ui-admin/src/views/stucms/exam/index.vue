@@ -45,9 +45,13 @@
 
     <!-- 列表 -->
     <el-table v-loading="loading" :data="list"  @selection-change="handleSelectionChange">
-      <el-table-column v-hasPermi="['stucms:exam:delete']" type="selection" width="55" align="center"/>
+      <el-table-column
+        v-if="checkPermi(['stucms:exam:delete'])"
+        type="selection"
+        width="55"
+        align="center"
+      />
       <el-table-column label="序号" type="index" align="center"/>
-      <!--<el-table-column label="主键" align="center" prop="examId" />-->
       <el-table-column label="考试名称" align="center" prop="examName" />
       <el-table-column label="考试日期" align="center" prop="examTime">
         <template slot-scope="scope">
