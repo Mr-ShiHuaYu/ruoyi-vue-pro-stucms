@@ -2,7 +2,7 @@ spring:
   application:
     name: stucms-server
   profiles:
-    active: prod
+    active: local
 
   main:
     allow-circular-references: true # 允许循环依赖，因为项目是三层架构，无法避免这个情况。

@@ -20,4 +20,10 @@ public class StudentApiImpl implements StudentApi {
         StudentDO studentDO = this.studentService.getStudentByUid(username);
         return StudentConvert.INSTANCE.convertDto(studentDO);
     }
+
+    @Override
+    public StudentRespDTO getStudentById(Long studentId) {
+        StudentDO studentDO = this.studentService.getStudent(studentId);
+        return StudentConvert.INSTANCE.convertDto(studentDO);
+    }
 }

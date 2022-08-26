@@ -56,4 +56,14 @@ public class AdminUserApiImpl implements AdminUserApi {
         return this.userService.getDeptCondition(deptId);
     }
 
+    @Override
+    public void updateUserByTeacherPhone(String oldPhone, String newPhone) {
+        this.userService.updateUserByTeacherPhone(oldPhone, newPhone);
+    }
+
+    @Override
+    public void updateUserByStudentUid(String oldUid, String newUid) {
+        this.userService.updateUserByStudentUid(oldUid, newUid);
+    }
+
 }

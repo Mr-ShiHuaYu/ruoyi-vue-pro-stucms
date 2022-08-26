@@ -20,4 +20,10 @@ public class TeacherApiImpl implements TeacherApi {
         TeacherDO teacherDO = teacherService.getTeacherByPhone(phone);
         return TeacherConvert.INSTANCE.convertDTO(teacherDO);
     }
+
+    @Override
+    public TeacherRespDTO getTeacherById(Long teacherId) {
+        TeacherDO teacher = teacherService.getTeacher(teacherId);
+        return TeacherConvert.INSTANCE.convertDTO(teacher);
+    }
 }

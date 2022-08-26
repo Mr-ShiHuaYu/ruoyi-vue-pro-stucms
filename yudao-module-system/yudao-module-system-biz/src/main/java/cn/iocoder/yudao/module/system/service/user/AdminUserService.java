@@ -37,7 +37,7 @@ public interface AdminUserService {
     /**
      * 更新用户的最后登陆信息
      *
-     * @param id 用户编号
+     * @param id      用户编号
      * @param loginIp 登陆 IP
      */
     void updateUserLogin(Long id, String loginIp);
@@ -45,7 +45,7 @@ public interface AdminUserService {
     /**
      * 修改用户个人信息
      *
-     * @param id 用户编号
+     * @param id    用户编号
      * @param reqVO 用户个人信息
      */
     void updateUserProfile(Long id, @Valid UserProfileUpdateReqVO reqVO);
@@ -53,7 +53,7 @@ public interface AdminUserService {
     /**
      * 修改用户个人密码
      *
-     * @param id 用户编号
+     * @param id    用户编号
      * @param reqVO 更新用户个人密码
      */
     void updateUserPassword(Long id, @Valid UserProfileUpdatePasswordReqVO reqVO);
@@ -211,7 +211,7 @@ public interface AdminUserService {
     /**
      * 判断密码是否匹配
      *
-     * @param rawPassword 未加密的密码
+     * @param rawPassword     未加密的密码
      * @param encodedPassword 加密后的密码
      * @return 是否匹配
      */
@@ -220,8 +220,14 @@ public interface AdminUserService {
 
     /**
      * 获得部门条件：查询指定部门的子部门编号们，包括自身
+     *
      * @param deptId 部门编号
      * @return 部门编号集合
      */
     Set<Long> getDeptCondition(Long deptId);
+
+
+    void updateUserByTeacherPhone(String oldPhone, String newPhone);
+
+    void updateUserByStudentUid(String oldUid, String newUid);
 }

@@ -9,6 +9,10 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.module.infra.api.file.FileApi;
+import cn.iocoder.yudao.module.stucms.api.student.StudentApi;
+import cn.iocoder.yudao.module.stucms.api.student.dto.StudentRespDTO;
+import cn.iocoder.yudao.module.stucms.api.teacher.TeacherApi;
+import cn.iocoder.yudao.module.stucms.api.teacher.dto.TeacherRespDTO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdatePasswordReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.*;
@@ -41,6 +45,7 @@ import static cn.iocoder.yudao.module.system.enums.ErrorCodeConstants.*;
 
 /**
  * 后台用户 Service 实现类
+ *
  * @author 芋道源码
  */
 @Service("adminUserService")
@@ -70,6 +75,10 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Resource
     private FileApi fileApi;
+    @Resource
+    private StudentApi studentApi;
+    @Resource
+    private TeacherApi teacherApi;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -83,7 +92,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         });
         // 校验正确性
         this.checkCreateOrUpdate(null, reqVO.getUsername(), reqVO.getMobile(), reqVO.getEmail(),
-                reqVO.getDeptId(), reqVO.getPostIds());
+            reqVO.getDeptId(), reqVO.getPostIds());
         // 插入用户
         AdminUserDO user = UserConvert.INSTANCE.convert(reqVO);
         user.setStatus(CommonStatusEnum.ENABLE.getStatus()); // 默认开启
@@ -92,7 +101,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         // 插入关联岗位
         if (CollectionUtil.isNotEmpty(user.getPostIds())) {
             this.userPostMapper.insertBatch(convertList(user.getPostIds(),
-                    postId -> new UserPostDO().setUserId(user.getId()).setPostId(postId)));
+                postId -> new UserPostDO().setUserId(user.getId()).setPostId(postId)));
         }
         return user.getId();
     }
@@ -102,7 +111,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     public void updateUser(UserUpdateReqVO reqVO) {
         // 校验正确性
         this.checkCreateOrUpdate(reqVO.getId(), reqVO.getUsername(), reqVO.getMobile(), reqVO.getEmail(),
-                reqVO.getDeptId(), reqVO.getPostIds());
+            reqVO.getDeptId(), reqVO.getPostIds());
         // 更新用户
         AdminUserDO updateObj = UserConvert.INSTANCE.convert(reqVO);
         this.userMapper.updateById(updateObj);
@@ -120,7 +129,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         // 执行新增和删除。对于已经授权的菜单，不用做任何处理
         if (!CollectionUtil.isEmpty(createPostIds)) {
             this.userPostMapper.insertBatch(convertList(createPostIds,
-                    postId -> new UserPostDO().setUserId(userId).setPostId(postId)));
+                postId -> new UserPostDO().setUserId(userId).setPostId(postId)));
         }
         if (!CollectionUtil.isEmpty(deletePostIds)) {
             this.userPostMapper.deleteByUserIdAndPostId(userId, deletePostIds);
@@ -285,6 +294,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     /**
      * 获得部门条件：查询指定部门的子部门编号们，包括自身
+     *
      * @param deptId 部门编号
      * @return 部门编号集合
      */
@@ -294,10 +304,42 @@ public class AdminUserServiceImpl implements AdminUserService {
             return Collections.emptySet();
         }
         Set<Long> deptIds = convertSet(this.deptService.getDeptsByParentIdFromCache(
-                deptId, true), DeptDO::getId);
+            deptId, true), DeptDO::getId);
         deptIds.add(deptId); // 包括自身
         return deptIds;
     }
+
+    @Override
+    public void updateUserByTeacherPhone(String oldPhone, String newPhone) {
+        TeacherRespDTO teacherRespDTO = teacherApi.getTeacherByPhone(newPhone);
+        if (teacherRespDTO != null) {
+            AdminUserDO adminUserDO = getUserByUsername(oldPhone);
+            if (adminUserDO != null) {
+                // 如果能通过旧手机号找到对应的用户，才同步修改
+                adminUserDO.setUsername(newPhone); // 将用户名设置成新的手机号
+                adminUserDO.setNickname(teacherRespDTO.getName());
+                adminUserDO.setSex(Integer.valueOf(teacherRespDTO.getSex()));
+                this.userMapper.updateById(adminUserDO);
+            }
+        }
+    }
+
+    @Override
+    public void updateUserByStudentUid(String oldUid, String newUid) {
+        StudentRespDTO studentRespDTO = studentApi.getStudentByUid(newUid);
+        if (studentRespDTO != null) {
+            AdminUserDO adminUserDO = getUserByUsername(oldUid); // 通过老学号找到对应的用户
+            if (adminUserDO != null) {
+                // 如果旧学号能找到对应用户才修改
+                adminUserDO.setUsername(newUid);
+                adminUserDO.setNickname(studentRespDTO.getStudentName());
+                adminUserDO.setDeptId(studentRespDTO.getDeptId());
+                adminUserDO.setSex(Integer.valueOf(studentRespDTO.getSex()));
+                this.userMapper.updateById(adminUserDO);
+            }
+        }
+    }
+
 
     private void checkCreateOrUpdate(Long id, String username, String mobile, String email,
                                      Long deptId, Set<Long> postIds) {
@@ -382,6 +424,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     /**
      * 校验旧密码
+     *
      * @param id          用户 id
      * @param oldPassword 旧密码
      */
@@ -403,12 +446,12 @@ public class AdminUserServiceImpl implements AdminUserService {
             throw exception(USER_IMPORT_LIST_IS_EMPTY);
         }
         UserImportRespVO respVO = UserImportRespVO.builder().createUsernames(new ArrayList<>())
-                .updateUsernames(new ArrayList<>()).failureUsernames(new LinkedHashMap<>()).build();
+            .updateUsernames(new ArrayList<>()).failureUsernames(new LinkedHashMap<>()).build();
         importUsers.forEach(importUser -> {
             // 校验，判断是否有不符合的原因
             try {
                 this.checkCreateOrUpdate(null, null, importUser.getMobile(), importUser.getEmail(),
-                        importUser.getDeptId(), null);
+                    importUser.getDeptId(), null);
             } catch (ServiceException ex) {
                 respVO.getFailureUsernames().put(importUser.getUsername(), ex.getMessage());
                 return;
@@ -417,7 +460,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             AdminUserDO existUser = this.userMapper.selectByUsername(importUser.getUsername());
             if (existUser == null) {
                 this.userMapper.insert(UserConvert.INSTANCE.convert(importUser)
-                        .setPassword(this.encodePassword(this.userInitPassword))); // 设置默认密码
+                    .setPassword(this.encodePassword(this.userInitPassword))); // 设置默认密码
                 respVO.getCreateUsernames().add(importUser.getUsername());
                 return;
             }

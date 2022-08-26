@@ -12,6 +12,7 @@ public interface ErrorCodeConstants {
 
     // ========== 学生管理 1010001001 ==========
     ErrorCode STUDENT_NOT_EXISTS = new ErrorCode(1010001001, "学生管理不存在");
+    ErrorCode STUDENT_UPDATE_ERROR = new ErrorCode(1010001002, "非管理员不能修改关键字段：{}");
 
 
     // ========== 课程 1010002001 ==========
@@ -19,6 +20,7 @@ public interface ErrorCodeConstants {
     ErrorCode COURSE_COURSE_NAME_EXISTS = new ErrorCode(1010002002, "课程名称:【{}】已经存在");
     // ========== 老师 1010003001 ==========
     ErrorCode TEACHER_NOT_EXISTS = new ErrorCode(1010003001, "老师不存在");
+    ErrorCode TEACHER_UPDATE_ERROR = new ErrorCode(1010003002, "非管理员不能修改关键字段：{}");
 
 
     // ========== 考试 1010004001 ==========
