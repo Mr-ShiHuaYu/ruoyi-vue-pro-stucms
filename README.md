@@ -9,7 +9,7 @@
 
 * 项目原型是我原来使用Php Laravel开发的,地址:<https://gitee.com/vip_huage/StudentCMS>
 
-* Mysql的[mysqld] 配置中需要加上
+* Mysql的`[mysqld]` 配置中需要加上
 >
 > sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
 

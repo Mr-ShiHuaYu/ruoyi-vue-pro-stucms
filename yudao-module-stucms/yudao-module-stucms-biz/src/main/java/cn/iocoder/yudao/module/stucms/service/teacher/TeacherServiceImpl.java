@@ -76,7 +76,7 @@ public class TeacherServiceImpl implements TeacherService {
      * 检查是否能更新老师
      * 1.非管理员不能修改老师的手机号
      *
-     * @param updateReqVO
+     * @param updateReqVO 老师更新 Request VO
      */
     private void validateTeacherUpdate(TeacherUpdateReqVO updateReqVO) {
         Long userId = SecurityFrameworkUtils.getLoginUserId();
